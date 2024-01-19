@@ -11,7 +11,6 @@ Simple frontend app developed with Vue.js in order to work with the SunCo and Me
 
 ## Installation
 
-- clone the repo
 - `npm install`
 - create an environment file `.env` and add the following variables:
 
