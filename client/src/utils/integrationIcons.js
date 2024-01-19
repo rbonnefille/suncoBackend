@@ -1,0 +1,28 @@
+import defaultIcon from "@/assets/genericIntegration.svg";
+
+export const integrationIcons = {
+  android: "https://marketplace-cdn.smooch.io/android/icon@2x.png",
+  ios: "https://marketplace-cdn.smooch.io/ios/icon@2x.png",
+  web: "https://marketplace-cdn.smooch.io/web/icon@2x.png",
+  twilio: "https://marketplace-cdn.smooch.io/twilio/icon@2x.png",
+  messenger: "https://marketplace-cdn.smooch.io/messenger/icon@2x.png",
+  telegram: "https://marketplace-cdn.smooch.io/telegram/icon@2x.png",
+  line: "https://marketplace-cdn.smooch.io/line/icon@2x.png",
+  viber: "https://marketplace-cdn.smooch.io/viber/icon@2x.png",
+  wechat: "https://marketplace-cdn.smooch.io/wechat/icon@2x.png",
+  twitter: "https://marketplace-cdn.smooch.io/twitter/icon@2x.png",
+  mailgun: "https://marketplace-cdn.smooch.io/mailgun/icon@2x.png",
+  whatsapp: "https://marketplace-cdn.smooch.io/whatsapp/icon@2x.png",
+  messagebird: "https://marketplace-cdn.smooch.io/messagebird/icon@2x.png",
+  apple: "https://marketplace-cdn.smooch.io/apple/icon@2x.png",
+  instagram: "https://marketplace-cdn.smooch.io/instagram/icon@2x.png",
+  slack: "https://marketplace-cdn.smooch.io/slack/icon@2x.png",
+  helpscout: "https://marketplace-cdn.smooch.io/helpscout/icon@2x.png",
+  zendesk: "https://marketplace-cdn.smooch.io/zendesk/icon@2x.png",
+  email: "https://marketplace-cdn.smooch.io/email/icon@2x.png",
+  officeHours: "https://marketplace-cdn.smooch.io/officehours/icon@2x.png",
+  custom: "https://marketplace-cdn.smooch.io/webhook/icon@2x.png",
+  "zd:answerBot": "https://marketplace-cdn.smooch.io/answerbot/icon@2x.png",
+  "zd:agentWorkspace": "https://marketplace-cdn.smooch.io/zendesk/icon@2x.png",
+  default: defaultIcon,
+};
