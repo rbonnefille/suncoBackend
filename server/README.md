@@ -1,4 +1,4 @@
-# Basic implementation of the SunCo Web Messenger by using NPM and a Bot with Switchboard
+# Basic implementation of the SunCo APIs in Node.js for to deliver data to the Client app
 
 # Necessary variables for the project
 
