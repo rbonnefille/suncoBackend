@@ -6,14 +6,8 @@
         🚧 This is a dashboard for SunCo/Messaging. It is a work in progress.
       </h4>
       <div class="d-grid gap-2 flex justify-content-sm-center">
-        <RouterLink
-          v-for="(route, index) in routes"
-          :key="route.to"
-          :to="route.to"
-          :target="route.target"
-          class="btn btn-lg"
-          v-bind="$attrs"
-        >
+        <RouterLink v-for="(route, index) in routes" :key="route.to" :to="route.to" :target="route.target"
+          class="btn btn-lg" v-bind="$attrs">
           {{ route.text }}
         </RouterLink>
       </div>
@@ -42,15 +36,7 @@ const routes = [
   {
     to: "/sunco/users",
     text: "Check SunCo User",
-  },
-  {
-    to: "/sunco/notifications",
-    text: "Send Notification",
-  },
-  {
-    to: "/zendesk",
-    text: "Zendesk Tool",
-  },
+  }
 ];
 </script>
 
