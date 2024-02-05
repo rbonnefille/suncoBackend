@@ -1,6 +1,7 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
+import { json } from 'stream/consumers';
 dotenv.config();
-import SunshineConversationsClient from "sunshine-conversations-client";
+import SunshineConversationsClient from 'sunshine-conversations-client';
 
 const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -12,11 +13,11 @@ class SunCoClient {
   }
   setApiClient() {
     const defaultClient = SunshineConversationsClient.ApiClient.instance;
-    const basicAuth = defaultClient.authentications["basicAuth"];
+    const basicAuth = defaultClient.authentications['basicAuth'];
     basicAuth.username = process.env.KEY_ID;
     basicAuth.password = process.env.SECRET_KEY;
     defaultClient.basePath =
-      process.env.POD_BASE_URL || "https://api.smooch.io";
+      process.env.POD_BASE_URL || 'https://api.smooch.io';
   }
 
   async postActivity(payload) {
@@ -24,7 +25,7 @@ class SunCoClient {
     const apiInstance = new SunshineConversationsClient.ActivitiesApi();
     const activityPost = {
       author: author,
-      type: "typing:start",
+      type: 'typing:start',
     };
     try {
       return await apiInstance.postActivity(
@@ -47,13 +48,13 @@ class SunCoClient {
     messagePost.setAuthor(author);
     if (image) {
       messagePost.setContent({
-        type: "image",
+        type: 'image',
         mediaUrl: image,
         text: message,
       });
     } else {
       messagePost.setContent({
-        type: "text",
+        type: 'text',
         text: message,
         metadata: metadata,
       });
@@ -139,10 +140,10 @@ class SunCoClient {
     const apiInstance = new SunshineConversationsClient.ConversationsApi();
     const conversationUpdateBody =
       new SunshineConversationsClient.ConversationUpdateBody();
-    conversationUpdateBody.displayName = new Date().toLocaleString("en-us", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+    conversationUpdateBody.displayName = new Date().toLocaleString('en-us', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     });
     try {
       return await apiInstance.updateConversation(
@@ -292,6 +293,60 @@ class SunCoClient {
     }
   }
 
+  async updateSwitchboardIntegration(
+    switchboardIntegrationId,
+    nextSwitchboardIntegrationId
+  ) {
+    const apiInstance =
+      new SunshineConversationsClient.SwitchboardIntegrationsApi();
+    const switchboardIntegrationUpdateBody =
+      new SunshineConversationsClient.SwitchboardIntegrationUpdateBody();
+    switchboardIntegrationUpdateBody.nextSwitchboardIntegrationId =
+      nextSwitchboardIntegrationId;
+    try {
+      return await apiInstance.updateSwitchboardIntegration(
+        this.appId,
+        this.switchboardId,
+        switchboardIntegrationId,
+        switchboardIntegrationUpdateBody
+      );
+    } catch (error) {
+      // catch error
+      return error.body?.errors[0]?.title || error.status;
+    }
+  }
+
+  async createSwitchboardIntegration(
+    integrationName,
+    integrationId,
+    deliverStandbyEvents,
+    nextSwitchboardIntegrationId,
+    messageHistoryCount = 10
+  ) {
+    const apiInstance =
+      new SunshineConversationsClient.SwitchboardIntegrationsApi();
+    let switchboardIntegrationCreateBody =
+      new SunshineConversationsClient.SwitchboardIntegrationCreateBody();
+    switchboardIntegrationCreateBody.name = integrationName;
+    switchboardIntegrationCreateBody.integrationId = integrationId;
+    switchboardIntegrationCreateBody.deliverStandbyEvents =
+      deliverStandbyEvents;
+    switchboardIntegrationCreateBody.nextSwitchboardIntegrationId =
+      nextSwitchboardIntegrationId;
+    switchboardIntegrationCreateBody.messageHistoryCount = messageHistoryCount;
+    try {
+      return await apiInstance.createSwitchboardIntegration(
+        this.appId,
+        this.switchboardId,
+        switchboardIntegrationCreateBody
+      );
+    } catch (error) {
+      // catch error
+      console.log(error.body?.errors[0]?.title);
+      return { error: error.body?.errors[0]?.title };
+    }
+  }
+
   async listIntegrations() {
     const apiInstance = new SunshineConversationsClient.IntegrationsApi();
     try {
@@ -303,9 +358,9 @@ class SunCoClient {
   }
 
   getUserIdOrExternalId(payload) {
-    if (payload.hasOwnProperty("userId")) {
+    if (payload.hasOwnProperty('userId')) {
       return payload.userId;
-    } else if (payload.hasOwnProperty("externalId")) {
+    } else if (payload.hasOwnProperty('externalId')) {
       return payload.externalId;
     }
     return payload;
