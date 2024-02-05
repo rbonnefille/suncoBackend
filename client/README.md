@@ -20,6 +20,7 @@ VITE_SUNCO_INTEGRATION_ID=
 ```
 
 To get a SunCo integration id, you need to create a new Web integration via the API: https://docs.smooch.io/rest/#tag/Integrations
+(How to generate a SunCo API Key: https://support.zendesk.com/hc/en-us/articles/4576088682266-Using-the-Conversations-API-keys)
 Example:
 
 ```json
