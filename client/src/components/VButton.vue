@@ -12,18 +12,19 @@
 <script setup>
 const props = defineProps({
   button: {
-    btnText: { type: String, required: true, default: "Button Text" },
-    btnType: { type: String, required: true, default: "button" },
+    btnText: { type: String, required: true, default: 'Button Text' },
+    btnType: { type: String, required: true, default: 'button' },
     btnClick: { type: Function, required: true, default: () => {} },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-button {
-  background: #d6eef1;
+button,
+button:disabled {
+  background: #f6f0e6;
   border: none;
-  color: #03363d;
+  color: #16140c;
   text-align: center;
   text-decoration: none;
   margin-right: 10px;
@@ -33,12 +34,12 @@ button {
 
 button:focus,
 button:hover {
-  background-color: #03363d;
-  color: white;
+  background-color: #9a4497;
+  color: #ffffff;
 }
 
 // button:focus {
-//     background-color: #03363d;
+//     background-color: #9a4497;
 //     color: white;
 // }
 </style>

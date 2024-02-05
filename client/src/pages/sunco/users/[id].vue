@@ -6,7 +6,7 @@
     <div v-else-if="isLoading" class="text-center">
       <PulseLoader
         :loading="isLoading"
-        :color="'#03363d'"
+        :color="'#9a4497'"
         :size="`20px`"
       ></PulseLoader>
     </div>
@@ -38,32 +38,42 @@
                   <VDataItem :label="key" :value="metadata" />
                 </template>
               </ul>
-              <template v-if="suncoUser.identities.lenght > 0">
-                <ul class="list-group-item">
-                  identities:
-                  <template v-for="identities in suncoUser.identities">
-                    <template
-                      v-for="(identity, identityKey) in identities"
-                      :key="identity.value"
-                    >
-                      <VDataItem :label="identityKey" :value="identity" />
-                    </template>
+              <ul class="list-group-item">
+                identities:
+                <template v-for="identities in suncoUser.identities">
+                  <template
+                    v-for="(identity, identityKey) in identities"
+                    :key="identity.value"
+                  >
+                    <VDataItem :label="identityKey" :value="identity" />
                   </template>
-                </ul>
-              </template>
+                </template>
+              </ul>
             </ul>
           </div>
         </div>
         <div class="col">
-          <div class="card">
-            <div class="card-header bg-body-secondary">User Clients</div>
-            <div v-for="(clients, key) in suncoUserClients" :key="key">
+          <div
+            v-for="(clients, key) in suncoUserClients"
+            :key="key"
+            class="col"
+          >
+            <div class="card">
+              <div class="card-header bg-body-secondary">
+                <img
+                  :src="
+                    integrationIcons[clients.type] || integrationIcons.default
+                  "
+                  :alt="clients.type"
+                  width="20"
+                  height="20"
+                  class="align-middle"
+                />
+                {{ clients.type }}
+              </div>
               <ul class="list-group list-group-flush">
-                <template
-                  v-for="(client, clientKey) in clients"
-                  :key="client.id"
-                >
-                  <VDataItem :label="clientKey" :value="client" />
+                <template v-for="(client, key) in clients" :key="key">
+                  <VDataItem :label="key" :value="client" />
                 </template>
               </ul>
             </div>
@@ -137,11 +147,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeMount } from "vue";
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import VDataItem from "@/components/VDataItem.vue";
-import VError from "@/components/VError.vue";
-import { useRoute } from "vue-router";
+import { ref, computed, onBeforeMount } from 'vue';
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+import VDataItem from '@/components/VDataItem.vue';
+import VError from '@/components/VError.vue';
+import { useRoute } from 'vue-router';
+import { integrationIcons } from '@/utils/integrationIcons.js';
 
 const route = useRoute();
 

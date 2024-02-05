@@ -17,37 +17,37 @@
 </template>
 
 <script setup>
-import { useAttrs, computed } from "vue";
-import VLabel from "@/components/VLabel.vue";
+import { useAttrs, computed } from 'vue';
+import VLabel from '@/components/VLabel.vue';
 
 const attrs = useAttrs();
 
-defineEmits(["update:modelValue"]);
+defineEmits(['update:modelValue']);
 
 const props = defineProps({
   modelValue: {
     type: String,
-    default: "",
+    default: '',
   },
   id: {
     type: String,
-    default: "input",
+    default: 'input',
   },
   name: {
     type: String,
-    default: "input",
+    default: 'input',
   },
   type: {
     type: String,
-    default: "input",
+    default: 'input',
   },
   className: {
     type: String,
-    default: "",
+    default: '',
   },
   placeholder: {
     type: String,
-    default: "input",
+    default: 'input',
   },
   required: {
     type: Boolean,
@@ -64,19 +64,19 @@ const props = defineProps({
 // });
 
 const inputClass = computed(() => {
-  return props.type === "checkbox"
-    ? "form-check-input"
-    : "form-control rounded-4";
+  return props.type === 'checkbox'
+    ? 'form-check-input'
+    : 'form-control rounded-4';
 });
 </script>
 
 <style lang="css" scoped>
-input[type="text"]:focus,
-input[type="email"]:focus {
+input[type='text']:focus,
+input[type='email']:focus {
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
-  border-color: #03363d;
+  border-color: #16140c;
   outline: 0;
-  box-shadow: -2px 5px 2px 0rem #03363d;
+  box-shadow: -2px 5px 2px 0rem #9a4497;
 }
 </style>

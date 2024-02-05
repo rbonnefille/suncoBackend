@@ -1,10 +1,12 @@
-import { useUserStore } from "@/stores/store";
+import { useUserStore } from '@/stores/store';
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 
 export const getToken = async (userData) => {
-  const response = await fetch("/auth", {
-    method: "POST",
+  const response = await fetch('/auth', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(userData),
   });
@@ -18,17 +20,17 @@ export const getToken = async (userData) => {
 export const setSessionAuth = (external_id, token) => {
   clearSessionAuth();
   window.sessionStorage.setItem(
-    "suncoWidgetAuth",
+    'suncoWidgetAuth',
     JSON.stringify({ external_id, token })
   );
 };
 
 export const clearSessionAuth = () => {
-  window.sessionStorage.removeItem("suncoWidgetAuth");
+  window.sessionStorage.removeItem('suncoWidgetAuth');
 };
 
 export const getSessionAuth = () => {
-  return JSON.parse(window.sessionStorage.getItem("suncoWidgetAuth"));
+  return JSON.parse(window.sessionStorage.getItem('suncoWidgetAuth'));
 };
 
 export const clearBrowserStorage = () => {
@@ -43,20 +45,54 @@ export const clearBrowserStorage = () => {
 
 const catImgUrls = {
   mediaUrls: [
-    "https://cdn2.thecatapi.com/images/1be.jpg",
-    "https://cdn2.thecatapi.com/images/7g4.jpg",
-    "https://cdn2.thecatapi.com/images/9tc.jpg",
-    "https://cdn2.thecatapi.com/images/a3u.jpg",
-    "https://cdn2.thecatapi.com/images/alc.gif",
-    "https://cdn2.thecatapi.com/images/bca.jpg",
-    "https://cdn2.thecatapi.com/images/cgr.jpg",
-    "https://cdn2.thecatapi.com/images/ddb.jpg",
-    "https://cdn2.thecatapi.com/images/_np7TW9Iq.jpg",
-    "https://cdn2.thecatapi.com/images/9K-Lvmafl.jpg",
+    'https://cdn2.thecatapi.com/images/1be.jpg',
+    'https://cdn2.thecatapi.com/images/7g4.jpg',
+    'https://cdn2.thecatapi.com/images/9tc.jpg',
+    'https://cdn2.thecatapi.com/images/a3u.jpg',
+    'https://cdn2.thecatapi.com/images/alc.gif',
+    'https://cdn2.thecatapi.com/images/bca.jpg',
+    'https://cdn2.thecatapi.com/images/cgr.jpg',
+    'https://cdn2.thecatapi.com/images/ddb.jpg',
+    'https://cdn2.thecatapi.com/images/_np7TW9Iq.jpg',
+    'https://cdn2.thecatapi.com/images/9K-Lvmafl.jpg',
   ],
 };
 
 export const getRandomImageUrl = () => {
   const randomIndex = Math.floor(Math.random() * catImgUrls.mediaUrls.length);
   return catImgUrls.mediaUrls[randomIndex];
+};
+
+export const showWarningToast = (error) => {
+  toast.warning(error, {
+    position: 'bottom-center',
+    timeout: 3500,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: true,
+    hideProgressBar: true,
+    closeButton: 'button',
+    icon: true,
+    rtl: false,
+  });
+};
+
+export const showSuccessToast = (message) => {
+  toast.success(message, {
+    position: 'bottom-center',
+    timeout: 1500,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: true,
+    hideProgressBar: true,
+    closeButton: 'button',
+    icon: true,
+    rtl: false,
+  });
 };

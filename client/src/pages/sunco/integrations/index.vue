@@ -6,7 +6,7 @@
     <div v-else-if="isLoading" class="text-center">
       <PulseLoader
         :loading="isLoading"
-        :color="'#03363d'"
+        :color="'#9a4497'"
         :size="`20px`"
       ></PulseLoader>
     </div>
@@ -31,7 +31,7 @@
                   class="align-middle"
                 />
                 {{
-                  integration.displayName ? integration.displayName : "custom"
+                  integration.displayName ? integration.displayName : 'custom'
                 }}
               </span>
             </div>
@@ -52,16 +52,12 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed } from "vue";
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
-import { integrationIcons } from "@/utils/integrationIcons.js";
-import VDataItem from "@/components/VDataItem.vue";
-import VError from "@/components/VError.vue";
-import router from "@/router/index.js";
-
-const isLoading = ref(false);
-const integrations = ref([]);
-const errorMessage = ref(null);
+import { onBeforeMount, computed } from 'vue';
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+import { integrationIcons } from '@/utils/integrationIcons.js';
+import VDataItem from '@/components/VDataItem.vue';
+import VError from '@/components/VError.vue';
+import { isLoading, integrations, fetchIntegrations } from '@/utils/sunco.js';
 
 const integrationsByType = computed(() => {
   return integrations.value.slice(0).sort((a, b) => {
@@ -74,24 +70,6 @@ const integrationsByType = computed(() => {
     return 0;
   });
 });
-
-const fetchIntegrations = async () => {
-  try {
-    isLoading.value = true;
-    const response = await fetch("/integrations");
-    const data = await response.json();
-    if (data.error) {
-      throw new Error(data.error);
-    }
-    integrations.value = data.integrations;
-    isLoading.value = false;
-  } catch (error) {
-    errorMessage.value = error.message;
-    setTimeout(() => {
-      router.go(-1);
-    }, 2000);
-  }
-};
 
 onBeforeMount(async () => {
   await fetchIntegrations();

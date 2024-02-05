@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue';
 
 const userAgent = ref(window.navigator.userAgent);
 const browserLocale = ref(window.navigator.language);
@@ -21,11 +21,7 @@ p {
 }
 
 footer {
-  background: radial-gradient(
-    circle,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(3, 54, 61, 0.9508196721311475) 100%
-  );
+  background: #16140c;
   opacity: 0.98;
   opacity: 0.98;
   height: 15px;

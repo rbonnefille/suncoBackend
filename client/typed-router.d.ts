@@ -44,13 +44,9 @@ declare module 'vue-router/auto/routes' {
     'Dashboard': RouteRecordInfo<'Dashboard', '/dashboard', Record<never, never>, Record<never, never>>,
     'SunCo integrations': RouteRecordInfo<'SunCo integrations', '/sunco/integrations', Record<never, never>, Record<never, never>>,
     'SunCo Switchboard Configuration': RouteRecordInfo<'SunCo Switchboard Configuration', '/sunco/integrations/switchboard', Record<never, never>, Record<never, never>>,
-    'SunCo Notifications': RouteRecordInfo<'SunCo Notifications', '/sunco/notifications', Record<never, never>, Record<never, never>>,
     'Widget Snippets': RouteRecordInfo<'Widget Snippets', '/sunco/snippets/web-widget', Record<never, never>, Record<never, never>>,
-    'SunCo templates': RouteRecordInfo<'SunCo templates', '/sunco/templates', Record<never, never>, Record<never, never>>,
-    'Whatsapp templates': RouteRecordInfo<'Whatsapp templates', '/sunco/templates/whatsapp', Record<never, never>, Record<never, never>>,
     'Users': RouteRecordInfo<'Users', '/sunco/users', Record<never, never>, Record<never, never>>,
     'SunCo User': RouteRecordInfo<'SunCo User', '/sunco/users/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
-    'Zendesk Tools': RouteRecordInfo<'Zendesk Tools', '/zendesk', Record<never, never>, Record<never, never>>,
   }
 }
 

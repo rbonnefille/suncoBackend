@@ -2,7 +2,7 @@
   <label class="form-label">{{ label }}</label>
   <select
     :value="modelValue"
-    class="form-select"
+    class="form-select form-select-sm"
     @change="$emit('update:modelValue', $event.target.value)"
     v-bind="$attrs"
   >
@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-defineEmits(["update:modelValue"]);
+defineEmits(['update:modelValue']);
 
 defineProps({
   label: {
@@ -27,7 +27,7 @@ defineProps({
   },
   optionHint: {
     type: String,
-    default: "Please select one",
+    default: 'Please select one',
   },
   options: {
     type: Array,
