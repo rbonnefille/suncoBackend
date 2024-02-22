@@ -9,7 +9,7 @@ import { useFavicon, usePreferredDark } from '@vueuse/core';
 
 const isDark = usePreferredDark();
 const favicon = computed(() =>
-  isDark.value ? '../public/whiteFavicon.png' : '../public/darkFavicon.png'
+  isDark.value ? '../whiteFavicon.png' : '../darkFavicon.png'
 );
 
 useFavicon(favicon);
