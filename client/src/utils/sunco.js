@@ -1,6 +1,6 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { showSuccessToast, showWarningToast } from './helpers.js';
+import { showSuccessToast, showWarningToast } from "./helpers.js";
 
 const isLoadingSwitchboardUpdate = ref(false);
 const isLoadingSwitchboardIntegrationUpdate = ref(false);
@@ -30,13 +30,13 @@ const smoochConfig = {
   // },
 };
 const addOnclickListener = () => {
-  const webMessenger = document.getElementById('web-messenger-container');
+  const webMessenger = document.getElementById("web-messenger-container");
   const messengerContent = webMessenger.contentDocument;
-  messengerContent.addEventListener('click', (event) => {
+  messengerContent.addEventListener("click", (event) => {
     setTimeout(async () => {
-      if (event.target.tagName.toLowerCase() === 'button') {
+      if (event.target.tagName.toLowerCase() === "button") {
         window.Smooch.createConversation().then((conversation) =>
-          window.Smooch.loadConversation(conversation.id)
+          window.Smooch.loadConversation(conversation.id),
         );
       }
     }, 100);
@@ -45,12 +45,12 @@ const addOnclickListener = () => {
 
 export const initSunco = () => {
   window.Smooch.init(smoochConfig).then(() => {
-    console.log('SunCo widget ready');
+    console.log("SunCo widget ready");
     const user = window.Smooch.getUser();
     console.log(user);
     addOnclickListener();
   });
-  window.Smooch.on('widget:opened', () => {
+  window.Smooch.on("widget:opened", () => {
     if (
       !window.Smooch.getUser() ||
       window.Smooch.getConversations().length === 0
@@ -58,12 +58,12 @@ export const initSunco = () => {
       window.Smooch.createConversation();
     }
   });
-  window.Smooch.on('widget:closed', function () {
-    console.log('Widget is closed!');
+  window.Smooch.on("widget:closed", function () {
+    console.log("Widget is closed!");
   });
 
-  window.Smooch.on('ready', () => {
-    console.log('window.Smooch is ready');
+  window.Smooch.on("ready", () => {
+    console.log("window.Smooch is ready");
     // console.log(`Convo length ${window.Smooch.getConversations().length}`)
     // if (window.Smooch.getConversations().length === 0) {
     //   window.Smooch.destroy();
@@ -74,7 +74,7 @@ export const initSunco = () => {
 const fetchIntegrations = async () => {
   try {
     isLoading.value = true;
-    const response = await fetch('/integrations');
+    const response = await fetch("/integrations");
     const data = await response.json();
     if (data.error) {
       throw new Error(data.error);
@@ -88,14 +88,14 @@ const fetchIntegrations = async () => {
 
 const updateSwitchboard = async (
   enabled = true,
-  defaultSwitchboardIntegrationId
+  defaultSwitchboardIntegrationId,
 ) => {
   try {
     isLoadingSwitchboardUpdate.value = true;
-    const response = await fetch('/integrations/switchboards', {
-      method: 'PATCH',
+    const response = await fetch("/integrations/switchboards", {
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         enabled: Boolean(enabled),
@@ -105,9 +105,9 @@ const updateSwitchboard = async (
     const data = await response.json();
     switchboards.value = data.switchboard;
     isLoadingSwitchboardUpdate.value = false;
-    showSuccessToast('Switchboard updated');
+    showSuccessToast("Switchboard updated");
   } catch (error) {
-    console.error('An error occurred while updating the switchboard:', error);
+    console.error("An error occurred while updating the switchboard:", error);
     isLoadingSwitchboardUpdate.value = false;
     showWarningToast(error);
   }
@@ -115,14 +115,14 @@ const updateSwitchboard = async (
 
 const updateSwitchboardIntegration = async (
   switchboardIntegrationId,
-  nextSwitchboardIntegrationId
+  nextSwitchboardIntegrationId,
 ) => {
   try {
     isLoadingSwitchboardIntegrationUpdate.value = true;
-    const response = await fetch('/integrations/switchboardIntegration', {
-      method: 'PATCH',
+    const response = await fetch("/integrations/switchboardIntegration", {
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         switchboardIntegrationId,
@@ -135,8 +135,8 @@ const updateSwitchboardIntegration = async (
     isLoadingSwitchboardIntegrationUpdate.value = false;
   } catch (error) {
     console.error(
-      'An error occurred while updating the switchboard integration:',
-      error
+      "An error occurred while updating the switchboard integration:",
+      error,
     );
     isLoadingSwitchboardIntegrationUpdate.value = false;
     showWarningToast(error.message);
@@ -147,8 +147,8 @@ const fetchSwitchboardIntegrations = async () => {
   try {
     isLoading.value = true;
     const [sbintegrationsResponse, switchboardsResponse] = await Promise.all([
-      fetch('/integrations/sbintegrations'),
-      fetch('/integrations/switchboards'),
+      fetch("/integrations/sbintegrations"),
+      fetch("/integrations/switchboards"),
     ]);
     const sbintegrationsData = await sbintegrationsResponse.json();
     const switchboardsData = await switchboardsResponse.json();
@@ -158,8 +158,8 @@ const fetchSwitchboardIntegrations = async () => {
     switchboardIntegrations.value = sbintegrationsData?.switchboardIntegrations;
     switchboards.value = switchboardsData?.switchboards[0];
     isSwitchboardEnabled.value = switchboardsData?.switchboards[0].enabled
-      ? 'Enabled'
-      : 'Disabled';
+      ? "Enabled"
+      : "Disabled";
     defaultSwitchboardIntegrationIdSelected.value =
       switchboardsData?.switchboards[0].defaultSwitchboardIntegrationId;
     // Populate the selectedIntegrationId object with the initial values of the nextSwitchboardIntegrationId for each switchboard integration
@@ -178,14 +178,14 @@ const createSwitchboardIntegration = async (
   integrationId,
   deliverStandbyEvents,
   nextSwitchboardIntegrationId,
-  messageHistoryCount
+  messageHistoryCount,
 ) => {
   try {
     isLoadingSwitchboardIntegrationUpdate.value = true;
-    const response = await fetch('/integrations/switchboardIntegration', {
-      method: 'POST',
+    const response = await fetch("/integrations/switchboardIntegration", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         integrationName,
@@ -203,11 +203,11 @@ const createSwitchboardIntegration = async (
       throw new Error(data.error);
     }
     isLoadingSwitchboardIntegrationUpdate.value = false;
-    showSuccessToast('Switchboard integration created');
+    showSuccessToast("Switchboard integration created");
   } catch (error) {
     console.error(
-      'An error occurred while updating the switchboard:',
-      error.message
+      "An error occurred while updating the switchboard:",
+      error.message,
     );
     isLoadingSwitchboardIntegrationUpdate.value = false;
     showWarningToast(error.message);

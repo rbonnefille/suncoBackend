@@ -12,7 +12,7 @@ const logger = winston.createLogger({
     timestamp({
       format: "YYYY-MM-DD hh:mm:ss.SSS A",
     }),
-    json()
+    json(),
   ),
   transports: [
     new winston.transports.File({
@@ -42,7 +42,7 @@ const loggerMiddleware = morgan(
         logger.http(`incoming-req`, data);
       },
     },
-  }
+  },
 );
 
 export default loggerMiddleware;

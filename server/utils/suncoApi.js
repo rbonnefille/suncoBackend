@@ -1,7 +1,7 @@
-import * as dotenv from 'dotenv';
-import { json } from 'stream/consumers';
+import * as dotenv from "dotenv";
+import { json } from "stream/consumers";
 dotenv.config();
-import SunshineConversationsClient from 'sunshine-conversations-client';
+import SunshineConversationsClient from "sunshine-conversations-client";
 
 const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -13,11 +13,11 @@ class SunCoClient {
   }
   setApiClient() {
     const defaultClient = SunshineConversationsClient.ApiClient.instance;
-    const basicAuth = defaultClient.authentications['basicAuth'];
+    const basicAuth = defaultClient.authentications["basicAuth"];
     basicAuth.username = process.env.KEY_ID;
     basicAuth.password = process.env.SECRET_KEY;
     defaultClient.basePath =
-      process.env.POD_BASE_URL || 'https://api.smooch.io';
+      process.env.POD_BASE_URL || "https://api.smooch.io";
   }
 
   async postActivity(payload) {
@@ -25,13 +25,13 @@ class SunCoClient {
     const apiInstance = new SunshineConversationsClient.ActivitiesApi();
     const activityPost = {
       author: author,
-      type: 'typing:start',
+      type: "typing:start",
     };
     try {
       return await apiInstance.postActivity(
         this.appId,
         conversationId,
-        activityPost
+        activityPost,
       );
     } catch (error) {
       // catch error
@@ -48,13 +48,13 @@ class SunCoClient {
     messagePost.setAuthor(author);
     if (image) {
       messagePost.setContent({
-        type: 'image',
+        type: "image",
         mediaUrl: image,
         text: message,
       });
     } else {
       messagePost.setContent({
-        type: 'text',
+        type: "text",
         text: message,
         metadata: metadata,
       });
@@ -63,7 +63,7 @@ class SunCoClient {
       return await apiInstance.postMessage(
         this.appId,
         conversationId,
-        messagePost
+        messagePost,
       );
     } catch (error) {
       return error.response?.text;
@@ -105,7 +105,7 @@ class SunCoClient {
       return await apiInstance.updateUser(
         this.appId,
         userIdOrExternalId,
-        userUpdateBody
+        userUpdateBody,
       );
     } catch (error) {
       // catch error
@@ -140,16 +140,16 @@ class SunCoClient {
     const apiInstance = new SunshineConversationsClient.ConversationsApi();
     const conversationUpdateBody =
       new SunshineConversationsClient.ConversationUpdateBody();
-    conversationUpdateBody.displayName = new Date().toLocaleString('en-us', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    conversationUpdateBody.displayName = new Date().toLocaleString("en-us", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
     try {
       return await apiInstance.updateConversation(
         this.appId,
         conversationId,
-        conversationUpdateBody
+        conversationUpdateBody,
       );
     } catch (error) {
       // catch error
@@ -186,7 +186,7 @@ class SunCoClient {
 
   async passControl(
     payload,
-    switchboardIntegration = process.env.NEXT_SWITCHBOARD_INTEGRATION
+    switchboardIntegration = process.env.NEXT_SWITCHBOARD_INTEGRATION,
   ) {
     const { conversationId, metadata } = payload;
     const apiInstance = new SunshineConversationsClient.SwitchboardActionsApi();
@@ -195,14 +195,14 @@ class SunCoClient {
     if (metadata) {
       passControlBody.metadata = metadata;
       console.log(
-        `Switchboard metadata sent ${JSON.stringify(passControlBody, null, 2)}`
+        `Switchboard metadata sent ${JSON.stringify(passControlBody, null, 2)}`,
       );
     }
     try {
       return await apiInstance.passControl(
         this.appId,
         conversationId,
-        passControlBody
+        passControlBody,
       );
     } catch (error) {
       // catch error
@@ -222,7 +222,7 @@ class SunCoClient {
       return await apiInstance.offerControl(
         this.appId,
         conversationId,
-        offerControlBody
+        offerControlBody,
       );
     } catch (error) {
       // catch error
@@ -262,7 +262,7 @@ class SunCoClient {
     try {
       return await apiInstance.listSwitchboardIntegrations(
         this.appId,
-        this.switchboardId
+        this.switchboardId,
       );
     } catch (error) {
       // catch error
@@ -285,7 +285,7 @@ class SunCoClient {
       return await apiInstance.updateSwitchboard(
         this.appId,
         this.switchboardId,
-        switchboardUpdateBody
+        switchboardUpdateBody,
       );
     } catch (error) {
       // catch error
@@ -295,7 +295,7 @@ class SunCoClient {
 
   async updateSwitchboardIntegration(
     switchboardIntegrationId,
-    nextSwitchboardIntegrationId
+    nextSwitchboardIntegrationId,
   ) {
     const apiInstance =
       new SunshineConversationsClient.SwitchboardIntegrationsApi();
@@ -308,7 +308,7 @@ class SunCoClient {
         this.appId,
         this.switchboardId,
         switchboardIntegrationId,
-        switchboardIntegrationUpdateBody
+        switchboardIntegrationUpdateBody,
       );
     } catch (error) {
       // catch error
@@ -321,7 +321,7 @@ class SunCoClient {
     integrationId,
     deliverStandbyEvents,
     nextSwitchboardIntegrationId,
-    messageHistoryCount = 10
+    messageHistoryCount = 10,
   ) {
     const apiInstance =
       new SunshineConversationsClient.SwitchboardIntegrationsApi();
@@ -338,7 +338,7 @@ class SunCoClient {
       return await apiInstance.createSwitchboardIntegration(
         this.appId,
         this.switchboardId,
-        switchboardIntegrationCreateBody
+        switchboardIntegrationCreateBody,
       );
     } catch (error) {
       // catch error
@@ -358,9 +358,9 @@ class SunCoClient {
   }
 
   getUserIdOrExternalId(payload) {
-    if (payload.hasOwnProperty('userId')) {
+    if (payload.hasOwnProperty("userId")) {
       return payload.userId;
-    } else if (payload.hasOwnProperty('externalId')) {
+    } else if (payload.hasOwnProperty("externalId")) {
       return payload.externalId;
     }
     return payload;

@@ -22,11 +22,11 @@ const returnToken = async (req, res) => {
   const jwtToken = jwt.signJwt();
   const parts = jwtToken.split(".");
   console.log(
-    `----------------------------------------Encoded JWT---------------------------------------- \n`
+    `----------------------------------------Encoded JWT---------------------------------------- \n`,
   );
   console.log(`JWT Token generated: ${jwtToken}`);
   console.log(
-    `----------------------------------------Decoded JWT---------------------------------------- \n`
+    `----------------------------------------Decoded JWT---------------------------------------- \n`,
   );
   console.log(JSON.parse(`${Buffer.from(parts[1], "base64").toString()} \n`));
   res.json({ token: jwtToken });
