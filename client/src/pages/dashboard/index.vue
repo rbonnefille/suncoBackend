@@ -18,14 +18,12 @@ onMounted(() => {
 });
 </script>
 
-<route lang="json">
-{
+<route lang="json">{
   "name": "Dashboard",
   "meta": {
     "title": "Acme Corp Dashboard"
   }
-}
-</route>
+}</route>
 
 <style>
 body {
