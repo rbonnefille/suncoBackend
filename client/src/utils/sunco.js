@@ -1,7 +1,10 @@
-import { ref } from "vue";
+import { ref } from 'vue';
+import { showSuccessToast, showWarningToast } from './helpers.js';
 
-import { showSuccessToast, showWarningToast } from "./helpers.js";
-
+const suncoUser = ref(null);
+const suncoUserClients = ref(null);
+const suncoUserConversations = ref(null);
+const suncoUserDevices = ref(null);
 const isLoadingSwitchboardUpdate = ref(false);
 const isLoadingSwitchboardIntegrationUpdate = ref(false);
 const switchboards = ref(null);
@@ -24,19 +27,26 @@ const smoochConfig = {
   // },
   // delegate: {
   //   beforeDisplay(message, data) {
-  //     console.log(message, data);
+  //     if (
+  //       message.role === 'business' &&
+  //       message.source.type === 'zd:answerBot'
+  //     ) {
+  //       message.displayName = 'Virtual Assistant';
+  //       message.avatarUrl =
+  //         'https://www.gravatar.com/avatar/00000000000000000000000000000000.png?s=200&d=mm';
+  //     }
   //     return message;
   //   },
   // },
 };
 const addOnclickListener = () => {
-  const webMessenger = document.getElementById("web-messenger-container");
+  const webMessenger = document.getElementById('web-messenger-container');
   const messengerContent = webMessenger.contentDocument;
-  messengerContent.addEventListener("click", (event) => {
+  messengerContent.addEventListener('click', (event) => {
     setTimeout(async () => {
-      if (event.target.tagName.toLowerCase() === "button") {
+      if (event.target.tagName.toLowerCase() === 'button') {
         window.Smooch.createConversation().then((conversation) =>
-          window.Smooch.loadConversation(conversation.id),
+          window.Smooch.loadConversation(conversation.id)
         );
       }
     }, 100);
@@ -45,12 +55,39 @@ const addOnclickListener = () => {
 
 export const initSunco = () => {
   window.Smooch.init(smoochConfig).then(() => {
-    console.log("SunCo widget ready");
+    console.log('SunCo widget ready');
     const user = window.Smooch.getUser();
     console.log(user);
     addOnclickListener();
+    // if (
+    //   Smooch.getConversations().length === 0 ||
+    //   !Smooch.getConversations().find(
+    //     (conversation) => conversation.metadata.brand === metadataBrand
+    //   )
+    // ) {
+    //   Smooch.createConversation({
+    //     metadata: {
+    //       brand: metadataBrand,
+    //       'zen:ticket:tags': window.location.href,
+    //     },
+    //   }).then((conversation) => {
+    //     Smooch.loadConversation(conversation.id);
+    //   });
+    // } else {
+    //   const userConvos = Smooch.getConversations();
+    //   const { id: conversationId } = userConvos.find(
+    //     (conversation) => conversation.metadata.brand === metadataBrand
+    //   );
+    //   Smooch.loadConversation(conversationId);
+    //   Smooch.updateConversation(conversationId, {
+    //     metadata: {
+    //       'zen:ticket:tags': window.location.href,
+    //     },
+    //   });
+    // }
   });
-  window.Smooch.on("widget:opened", () => {
+
+  window.Smooch.on('widget:opened', () => {
     if (
       !window.Smooch.getUser() ||
       window.Smooch.getConversations().length === 0
@@ -58,12 +95,13 @@ export const initSunco = () => {
       window.Smooch.createConversation();
     }
   });
-  window.Smooch.on("widget:closed", function () {
-    console.log("Widget is closed!");
+
+  window.Smooch.on('widget:closed', function () {
+    console.log('Widget is closed!');
   });
 
-  window.Smooch.on("ready", () => {
-    console.log("window.Smooch is ready");
+  window.Smooch.on('ready', () => {
+    console.log('window.Smooch is ready');
     // console.log(`Convo length ${window.Smooch.getConversations().length}`)
     // if (window.Smooch.getConversations().length === 0) {
     //   window.Smooch.destroy();
@@ -71,31 +109,80 @@ export const initSunco = () => {
   });
 };
 
+const fetchSunCoUser = async (userId) => {
+  try {
+    isLoading.value = true;
+    const [
+      userResponse,
+      clientsResponse,
+      conversationsResponse,
+      devicesResponse,
+    ] = await Promise.all([
+      fetch(`/users/${userId}`),
+      fetch(`/users/${userId}/clients`),
+      fetch(`/users/${userId}/conversations`),
+      fetch(`/users/${userId}/devices`),
+    ]);
+
+    const [userData, clientsData, conversationsData, devicesData] =
+      await Promise.all([
+        userResponse.json(),
+        clientsResponse.json(),
+        conversationsResponse.json(),
+        devicesResponse.json(),
+      ]);
+
+    if (
+      userData.error ||
+      clientsData.error ||
+      conversationsData.error ||
+      devicesData.error
+    ) {
+      throw new Error(
+        userData.error ||
+          clientsData.error ||
+          conversationsData.error ||
+          devicesData.error
+      );
+    }
+
+    // Assign the values
+    suncoUser.value = userData.user;
+    suncoUserClients.value = clientsData.clients;
+    suncoUserConversations.value = conversationsData.conversations;
+    suncoUserDevices.value = devicesData.devices;
+  } catch (error) {
+    errorMessage.value = error.message;
+    console.error(error);
+  }
+  isLoading.value = false;
+};
+
 const fetchIntegrations = async () => {
   try {
     isLoading.value = true;
-    const response = await fetch("/integrations");
+    const response = await fetch('/integrations');
     const data = await response.json();
     if (data.error) {
       throw new Error(data.error);
     }
     integrations.value = data.integrations;
-    isLoading.value = false;
   } catch (error) {
     showWarningToast(error.message);
   }
+  isLoading.value = false;
 };
 
 const updateSwitchboard = async (
   enabled = true,
-  defaultSwitchboardIntegrationId,
+  defaultSwitchboardIntegrationId
 ) => {
   try {
     isLoadingSwitchboardUpdate.value = true;
-    const response = await fetch("/integrations/switchboards", {
-      method: "PATCH",
+    const response = await fetch('/integrations/switchboards', {
+      method: 'PATCH',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         enabled: Boolean(enabled),
@@ -104,25 +191,24 @@ const updateSwitchboard = async (
     });
     const data = await response.json();
     switchboards.value = data.switchboard;
-    isLoadingSwitchboardUpdate.value = false;
-    showSuccessToast("Switchboard updated");
+    showSuccessToast('Switchboard updated');
   } catch (error) {
-    console.error("An error occurred while updating the switchboard:", error);
-    isLoadingSwitchboardUpdate.value = false;
+    console.error('An error occurred while updating the switchboard:', error);
     showWarningToast(error);
   }
+  isLoadingSwitchboardUpdate.value = false;
 };
 
 const updateSwitchboardIntegration = async (
   switchboardIntegrationId,
-  nextSwitchboardIntegrationId,
+  nextSwitchboardIntegrationId
 ) => {
   try {
     isLoadingSwitchboardIntegrationUpdate.value = true;
-    const response = await fetch("/integrations/switchboardIntegration", {
-      method: "PATCH",
+    const response = await fetch('/integrations/switchboardIntegration', {
+      method: 'PATCH',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         switchboardIntegrationId,
@@ -132,23 +218,22 @@ const updateSwitchboardIntegration = async (
     const data = await response.json();
     const { name: sbIntegrationName } = data.switchboardIntegration;
     showSuccessToast(`Switchboard integration ${sbIntegrationName} updated`);
-    isLoadingSwitchboardIntegrationUpdate.value = false;
   } catch (error) {
     console.error(
-      "An error occurred while updating the switchboard integration:",
-      error,
+      'An error occurred while updating the switchboard integration:',
+      error
     );
-    isLoadingSwitchboardIntegrationUpdate.value = false;
     showWarningToast(error.message);
   }
+  isLoadingSwitchboardIntegrationUpdate.value = false;
 };
 
 const fetchSwitchboardIntegrations = async () => {
   try {
     isLoading.value = true;
     const [sbintegrationsResponse, switchboardsResponse] = await Promise.all([
-      fetch("/integrations/sbintegrations"),
-      fetch("/integrations/switchboards"),
+      fetch('/integrations/sbintegrations'),
+      fetch('/integrations/switchboards'),
     ]);
     const sbintegrationsData = await sbintegrationsResponse.json();
     const switchboardsData = await switchboardsResponse.json();
@@ -158,8 +243,8 @@ const fetchSwitchboardIntegrations = async () => {
     switchboardIntegrations.value = sbintegrationsData?.switchboardIntegrations;
     switchboards.value = switchboardsData?.switchboards[0];
     isSwitchboardEnabled.value = switchboardsData?.switchboards[0].enabled
-      ? "Enabled"
-      : "Disabled";
+      ? 'Enabled'
+      : 'Disabled';
     defaultSwitchboardIntegrationIdSelected.value =
       switchboardsData?.switchboards[0].defaultSwitchboardIntegrationId;
     // Populate the selectedIntegrationId object with the initial values of the nextSwitchboardIntegrationId for each switchboard integration
@@ -167,10 +252,10 @@ const fetchSwitchboardIntegrations = async () => {
       selectedIntegrationId.value[integration.id] =
         integration.nextSwitchboardIntegrationId;
     });
-    isLoading.value = false;
   } catch (error) {
     showWarningToast(error.message);
   }
+  isLoading.value = false;
 };
 
 const createSwitchboardIntegration = async (
@@ -178,14 +263,14 @@ const createSwitchboardIntegration = async (
   integrationId,
   deliverStandbyEvents,
   nextSwitchboardIntegrationId,
-  messageHistoryCount,
+  messageHistoryCount
 ) => {
   try {
     isLoadingSwitchboardIntegrationUpdate.value = true;
-    const response = await fetch("/integrations/switchboardIntegration", {
-      method: "POST",
+    const response = await fetch('/integrations/switchboardIntegration', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         integrationName,
@@ -196,22 +281,21 @@ const createSwitchboardIntegration = async (
       }),
     });
     const data = await response.json();
-    switchboardIntegrations.value.push(data.switchboardIntegration);
-    selectedIntegrationId.value[data.switchboardIntegration.id] =
-      data.switchboardIntegration.nextSwitchboardIntegrationId;
     if (data.error) {
       throw new Error(data.error);
     }
-    isLoadingSwitchboardIntegrationUpdate.value = false;
-    showSuccessToast("Switchboard integration created");
+    switchboardIntegrations.value.push(data.switchboardIntegration);
+    selectedIntegrationId.value[data.switchboardIntegration.id] =
+      data.switchboardIntegration.nextSwitchboardIntegrationId;
+    showSuccessToast('Switchboard integration created');
   } catch (error) {
     console.error(
-      "An error occurred while updating the switchboard:",
-      error.message,
+      'An error occurred while updating the switchboard:',
+      error.message
     );
-    isLoadingSwitchboardIntegrationUpdate.value = false;
     showWarningToast(error.message);
   }
+  isLoadingSwitchboardIntegrationUpdate.value = false;
 };
 
 export {
@@ -225,6 +309,11 @@ export {
   defaultSwitchboardIntegrationIdSelected,
   selectedIntegrationId,
   integrations,
+  suncoUser,
+  suncoUserClients,
+  suncoUserConversations,
+  suncoUserDevices,
+  fetchSunCoUser,
   fetchIntegrations,
   updateSwitchboard,
   updateSwitchboardIntegration,
