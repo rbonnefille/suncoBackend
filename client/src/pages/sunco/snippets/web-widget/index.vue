@@ -18,10 +18,10 @@
 </template>
 
 <script setup>
-import { snippets } from '@/utils/snippets';
-import { useClipboard } from '@vueuse/core';
-import { ref, computed } from 'vue';
-import VSelect from '@/components/VSelect.vue';
+import { snippets } from "@/utils/snippets";
+import { useClipboard } from "@vueuse/core";
+import { ref, computed } from "vue";
+import VSelect from "@/components/VSelect.vue";
 
 const selected = ref(snippets[0].id);
 const source = ref(null);

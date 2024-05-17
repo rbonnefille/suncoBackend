@@ -10,7 +10,7 @@ import { initZDWidget } from "@/utils/zendesk";
 
 onMounted(() => {
   if (!document.getElementById("web-messenger-container")) {
-    initSunco("web-messenger-container");
+    initSunco();
   }
   if (!document.getElementById("ze-snippet")) {
     initZDWidget("ze-snippet", import.meta.env.VITE_MESSAGING_KEY);
@@ -24,9 +24,3 @@ onMounted(() => {
     "title": "Acme Corp Dashboard"
   }
 }</route>
-
-<style>
-body {
-  background-color: #f8f8f8;
-}
-</style>

@@ -1,5 +1,5 @@
 // userStore.js
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia';
 
 // export const store = reactive({
 //   authenticated: false,
@@ -11,7 +11,7 @@ import { defineStore } from "pinia";
 // })
 
 export const useUserStore = defineStore({
-  id: "user",
+  id: 'user',
   state: () => ({
     authenticated: false,
     external_id: null,
@@ -24,29 +24,29 @@ export const useUserStore = defineStore({
     },
     loginWidgets(widget) {
       const { external_id, token } =
-        JSON.parse(sessionStorage.getItem("suncoWidgetAuth")) || {};
+        JSON.parse(sessionStorage.getItem('suncoWidgetAuth')) || {};
       if (external_id && token) {
         this.changeAuthenticationStatus(true, external_id);
-        if (widget === "sunco") {
-          window.Smooch.on("ready", function () {
-            console.log("the init has completed!");
+        if (widget === 'sunco') {
+          window.Smooch.on('ready', function () {
+            console.log('the init has completed!');
             window.Smooch.login(external_id, token);
             window.Smooch.open();
           });
-        } else if (widget === "zendesk") {
-          window.zE("messenger", "loginUser", (callback) => {
+        } else if (widget === 'zendesk') {
+          window.zE('messenger', 'loginUser', (callback) => {
             callback(token);
-            window.zE("messenger", "open");
+            window.zE('messenger', 'open');
           });
         } else {
-          window.Smooch.on("ready", function () {
-            console.log("the init has completed!");
+          window.Smooch.on('ready', function () {
+            console.log('the init has completed!');
             window.Smooch.login(external_id, token);
             window.Smooch.open();
           });
-          window.zE("messenger", "loginUser", (callback) => {
+          window.zE('messenger', 'loginUser', (callback) => {
             callback(token);
-            window.zE("messenger", "open");
+            window.zE('messenger', 'open');
           });
         }
       }
