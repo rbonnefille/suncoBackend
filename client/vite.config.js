@@ -15,7 +15,11 @@ export default defineConfig({
       importMode: 'async',
       dts: './typed-router.d.ts',
     }),
-    Layouts(),
+    Layouts({
+      layoutsDirs: 'src/layouts',
+      pagesDirs: 'src/pages',
+      defaultLayout: 'default',
+    }),
     vue(),
     Components({ dirs: ['./src/components'] }),
   ],
