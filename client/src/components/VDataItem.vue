@@ -1,11 +1,14 @@
 <template>
   <ul class="list-group-item">
-    {{
-      label
-    }}:
-    <code :class="className">{{
+    <div v-if="loading" class="placeholder-glow">
+      <span class="placeholder col-12 placeholder-sm rounded"></span>
+    </div>
+    <template v-else>
+      {{ label }}:
+      <code :class="className">{{
       value === undefined || value === null ? "N/A" : value
     }}</code>
+    </template>
   </ul>
 </template>
 
@@ -13,17 +16,19 @@
 defineProps({
   label: {
     type: [String, Object, Number],
-    required: true,
     default: "",
   },
   value: {
     type: [String, Object, Boolean, Number],
-    required: true,
     default: "",
   },
   className: {
     type: [String, Object],
     default: "",
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 });
 </script>
