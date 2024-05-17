@@ -1,8 +1,56 @@
 export const snippets = [
   {
-    id: "Custom CSS",
+    id: 'Set Custom Metadata using Zendesk SDK formatting',
+    description: 'A way to set custom metadata using Zendesk SDK formatting',
+    content: `
+      const {id: conversationId} = Smooch.getDisplayedConverstation();
+      Smooch.updateConversation(conversationId, {
+        metadata: {
+          "zen:ticket:tags": "[tag1, tag2]",
+          "zen:ticket_field:<ticket_field_id>": "<value>"
+        }
+      });
+  `,
+  },
+  {
+    id: `Add text in the conversation's header`,
+    description: `A way to add text in the conversation's header`,
+    content: `
+    <script>
+    let customCSS = document.createElement("style");
+    customCSS.innerHTML = document.getElementById("custom-css").innerText;
+    Smooch.init({
+      integrationId: myIntegrationId,
+      notificationChannelPromptEnabled: false,
+      canUserSeeConversationList: false,
+      fixedHeader: true,
+      integrationOrder: [],
+    }).then(
+      function () {
+        const iframe = document.getElementById("web-messenger-container");
+        const iframedocument =
+          iframe.contentDocument || iframe.contentWindow.document;
+        iframedocument.head.appendChild(customCSS);
+        // You can use the querySelector instead of the custom-css that was injected, works the same
+        // const panel = iframedocument.querySelector("#wrapper > div.intro-pane.fixed")
+        // panel.style.backgroundColor = "#e0dede";
+        const privacyBanner = iframedocument.querySelector(
+          "#wrapper > div.intro-pane.fixed"
+        );
+        privacyBanner.innerHTML =
+          'This is the welcome banner';
+      },
+      function (err) {
+        // Handle issues during initialization
+      }
+    );
+  </script>
+  `,
+  },
+  {
+    id: 'Custom CSS',
     description:
-      "A way to add custom CSS to the widget to remove/change UI elements",
+      'A way to add custom CSS to the widget to remove/change UI elements',
     content: `
     <style id="custom-css">
     /*       /* set background color for the top part of conversation area */
@@ -99,8 +147,8 @@ export const snippets = [
 `,
   },
   {
-    id: "Embedded",
-    description: "A way to embed the widget a specific div",
+    id: 'Embedded',
+    description: 'A way to embed the widget a specific div',
     content: `<script>
 Smooch.init({
     integrationId: myIntegrationId,
@@ -113,8 +161,8 @@ setTimeout(() => {
 </script>`,
   },
   {
-    id: "Widget Left",
-    description: "A way to move the widget to the left",
+    id: 'Widget Left',
+    description: 'A way to move the widget to the left',
     content: `<style id="custom-css">
     /* override the widget depth to not be hidden by mobile fixed header */
     #web-messenger-container {
@@ -151,7 +199,7 @@ setTimeout(() => {
 </body>`,
   },
   {
-    id: "Event Listener Create Conversation",
+    id: 'Event Listener Create Conversation',
     description:
       "A way to add an eventListener to the 'Create conversation' button",
     content: `<script>
@@ -190,8 +238,8 @@ setTimeout(() => {
   </script>`,
   },
   {
-    id: "Hide Agent Name",
-    description: "A way to hide the agent name",
+    id: 'Hide Agent Name',
+    description: 'A way to hide the agent name',
     content: `
     //Update init to include delegate
     delegate: {
@@ -280,6 +328,26 @@ setTimeout(() => {
             observer.observe(messagesListElem, observerOptions);
         }
     }
+    `,
+  },
+  {
+    id: 'Delegates',
+    description: 'Delegates to hide/modify messages',
+    content: `
+    delegate: {
+      beforeDisplay(message, data) {
+         if (message.metadata && message.metadata.isHidden) {
+          return null;
+        }
+        if (message.role === 'business' && message.source.type === 'zd:agentWorkspace') {
+          message.displayName = 'Feedback Assistant';
+          message.avatarUrl = businessIconUrl;
+        } else if (message.role === 'business' && message.source.type === 'ultimate') {
+          message.displayName = 'Virtual Assistant' // TO BE CHANGE
+          message.avatarUrl = businessIconUrl; // TO BE CHANGED
+        }
+        return message;
+      }
     `,
   },
 ];
