@@ -1,21 +1,13 @@
 <template>
-  <button
-    :type="button.btnType"
-    @click="button.btnClick"
-    v-bind="$attrs"
-    class="btn rounded-4"
-  >
-    {{ button.btnText }}
+  <button :type="type" v-bind="$attrs" class="btn rounded-4">
+    {{ text }}
   </button>
 </template>
 
 <script setup>
 const props = defineProps({
-  button: {
-    btnText: { type: String, required: true, default: 'Button Text' },
-    btnType: { type: String, required: true, default: 'button' },
-    btnClick: { type: Function, required: true, default: () => {} },
-  },
+  text: { type: String, required: true, default: "Button Text" },
+  type: { type: String, required: true, default: "button" },
 });
 </script>
 
