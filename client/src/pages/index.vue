@@ -6,14 +6,8 @@
         🚧 This is a dashboard for SunCo/Messaging. It is a work in progress.
       </h4>
       <div class="d-grid gap-2 flex justify-content-sm-center">
-        <RouterLink
-          v-for="(route, index) in routes"
-          :key="route.to"
-          :to="route.to"
-          :target="route.target"
-          class="btn btn-lg"
-          v-bind="$attrs"
-        >
+        <RouterLink v-for="(route, index) in routes" :key="route.to" :to="route.to" :target="route.target"
+          class="btn btn-lg" v-bind="$attrs">
           {{ route.text }}
         </RouterLink>
       </div>
@@ -24,38 +18,35 @@
 <script setup>
 const routes = [
   {
-    to: '/dashboard',
-    text: 'Go to the Dashboard',
+    to: "/dashboard",
+    text: "Go to the Dashboard",
   },
   {
-    to: '/sunco/integrations',
-    text: 'Check SunCo integrations',
+    to: "/sunco/integrations",
+    text: "Check SunCo integrations",
   },
   {
-    to: '/sunco/integrations/switchboard',
-    text: 'Switchboard Configuration',
+    to: "/sunco/integrations/switchboard",
+    text: "Switchboard Configuration",
   },
   {
-    to: '/sunco/snippets/web-widget',
-    text: 'SunCo Web Widget Snippets',
+    to: "/sunco/snippets/web-widget",
+    text: "SunCo Web Widget Snippets",
   },
   {
-    to: '/sunco/users',
-    text: 'Check SunCo User',
-  },
+    to: "/sunco/users",
+    text: "Check SunCo User",
+  }
 ];
 </script>
 
-<route lang="json">
-{
+<route lang="json">{
   "name": "Home",
   "meta": {
     "layout": "home",
     "title": "Home"
   }
-}
-</route>
-
+}</route>
 <style lang="css" scoped>
 a:hover {
   background-color: #9a4497;
