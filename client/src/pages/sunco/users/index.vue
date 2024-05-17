@@ -1,20 +1,10 @@
 <template>
   <div class="mt-4 container-md">
-    <VLabel
-      id="labelSearchUser"
-      name="Search for a SunCo user"
-      className="form-label"
-    />
-    <VInput
-      id="searchUser"
-      v-model="searchUser"
-      name="Search User"
-      class="mx-3"
-      placeholder="user id or external id"
-      @keyup.enter="searchUserSunCo"
-    >
+    <VLabel id="labelSearchUser" name="Search for a SunCo user" className="form-label" />
+    <VInput id="searchUser" v-model="searchUser" name="Search User" class="mx-3" placeholder="user id or external id"
+      @keyup.enter="searchUserSunCo">
       <template #end>
-        <VButton :button="searchUserBtn" />
+        <VButton text="Search User" type="button" @click="searchUserSunCo" />
       </template>
     </VInput>
   </div>
@@ -30,25 +20,15 @@ import { ref } from "vue";
 const router = useRouter();
 const searchUser = ref("");
 
-const searchUserBtn = {
-  btnText: "Search User",
-  btnType: "button",
-  btnClick() {
-    searchUserSunCo();
-  },
-};
-
 const searchUserSunCo = async (e = undefined) => {
   const userId = searchUser.value || e.target.value;
   router.push({ name: "SunCo User", params: { id: userId } });
 };
 </script>
 
-<route lang="json">
-{
+<route lang="json">{
   "name": "Users",
   "meta": {
     "title": "Search User"
   }
-}
-</route>
+}</route>
