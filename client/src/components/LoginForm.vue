@@ -18,14 +18,16 @@
     <div class="row justify-content-center mt-3">
       <div class="col-auto">
         <VButton
-          :button="submitBtn"
+          text="Submit"
+          type="submit"
           :disabled="isFormInvalid"
           @click.prevent="submitForm"
         />
-        <VButton :button="cancelBtn" @click="resetForm" />
-        <template v-if="isFormInvalid">
+        <VButton text="Reset" type="reset" @click="resetForm" />
+        <template v-if="!authenticated">
           <VButton
-            :button="michaelScottBtn"
+            text="Log Michael Scott"
+            type="submit"
             @click.prevent="michaelScottForm"
           />
         </template>
@@ -77,21 +79,8 @@ const form = ref({
   email: null,
 });
 
-const cancelBtn = {
-  btnText: "Reset",
-  btnType: "reset",
-};
-const submitBtn = {
-  btnText: "Submit",
-  btnType: "submit",
-};
-const michaelScottBtn = {
-  btnText: "Log Michael Scott",
-  btnType: "submit",
-};
-
 const isFormInvalid = computed(
-  () => !form.value.external_id || !form.value.name || !form.value.email
+  () => !form.value.external_id || !form.value.name || !form.value.email,
 );
 
 const submitForm = async () => {

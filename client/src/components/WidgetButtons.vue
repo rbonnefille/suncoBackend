@@ -1,92 +1,85 @@
 <template>
   <h4 class="mt-4">SunCo Web</h4>
   <div class="col-auto" role="group" aria-label="Actions">
-    <VButton
-      v-for="(button, key) in suncoButtons"
-      v-once
-      :key="key"
-      :button="button"
-    />
+    <VButton v-for="(button, key) in suncoButtons" v-once :key="key" :text="button.text" :type="button.type"
+      @click="button.click" />
   </div>
   <h4 class="mt-4">Zendesk Web</h4>
   <div class="col-auto" role="group" aria-label="Actions">
-    <VButton
-      v-for="(button, key) in zendeskButtons"
-      v-once
-      :key="key"
-      :button="button"
-    />
+    <VButton v-for="(button, key) in zendeskButtons" v-once :key="key" :text="button.text" :type="button.type"
+      @click="button.click" />
+    <VSelect optionHint="Select locale" v-model="locale" :options="['en', 'fr', 'de', 'es']"
+      @update:modelValue="updateWidgetLocale" class="w-auto d-inline-flex rounded-4" />
   </div>
   <h4 class="mt-2">Tools</h4>
   <div class="col-auto" role="group" aria-label="Actions">
-    <VButton
-      v-for="(button, key) in toolsButtons"
-      v-once
-      :key="key"
-      :button="button"
-    />
+    <VButton v-for="(button, key) in toolsButtons" v-once :key="key" :text="button.text" :type="button.type"
+      @click="button.click" />
   </div>
   <div v-if="metadataSet">
     <h4 class="mt-5">Metadata were set with</h4>
     <div>
-      <code
-        >window.zE('messenger:set', 'conversationFields', [{ id: 17826865089553,
-        value: 'test'}])</code
-      >
+      <code>window.zE('messenger:set', 'conversationFields', [{ id: 17826865089553,
+        value: 'test'}])</code>
     </div>
     <div>
-      <code
-        >window.zE('messenger:set', 'conversationTags', ["sales",
-        "computer_accessories"]);</code
-      >
+      <code>window.zE('messenger:set', 'conversationTags', ["sales",
+        "computer_accessories"]);</code>
     </div>
   </div>
 </template>
 
 <script setup>
-import VButton from '@/components/VButton.vue';
-import { ref } from 'vue';
-import { useUserStore } from '@/stores/store';
-import { clearBrowserStorage, getRandomImageUrl } from '@/utils/helpers.js';
+import VButton from "@/components/VButton.vue";
+import VSelect from "@/components/VSelect.vue";
+import { ref } from "vue";
+import { useUserStore } from "@/stores/store";
+import { clearBrowserStorage, getRandomImageUrl } from "@/utils/helpers.js";
 
 const userStore = useUserStore();
 const { changeAuthenticationStatus, loginWidgets } = userStore;
 const metadataSet = ref(false);
+const locale = ref("");
+const updateWidgetLocale = () => {
+  window.zE(
+    "messenger:set", "locale", `${locale.value}`
+  );
+};
 const toolsButtons = {
   clearStorage: {
-    btnText: 'Clear Storage',
-    btnType: 'button',
-    btnClick() {
+    text: "Clear Storage",
+    type: "button",
+    click() {
       clearBrowserStorage();
     },
   },
 };
 const suncoButtons = {
   openSunCo: {
-    btnText: 'Open',
-    btnType: 'button',
-    btnClick() {
+    text: "Open",
+    type: "button",
+    click() {
       window.Smooch.open();
     },
   },
   closeSunCo: {
-    btnText: 'Close',
-    btnType: 'button',
-    btnClick() {
+    text: "Close",
+    type: "button",
+    click() {
       window.Smooch.close();
     },
   },
   loginSunco: {
-    btnText: 'Login',
-    btnType: 'button',
-    btnClick() {
-      loginWidgets('sunco');
+    text: "Login",
+    type: "button",
+    click() {
+      loginWidgets("sunco");
     },
   },
   logoutSunco: {
-    btnText: 'Logout',
-    btnType: 'button',
-    btnClick() {
+    text: "Logout",
+    type: "button",
+    click() {
       window.Smooch.logout();
       window.Smooch.close();
       userStore.$reset();
@@ -94,25 +87,25 @@ const suncoButtons = {
     },
   },
   sendImage: {
-    btnText: 'Send Image',
-    btnType: 'button',
-    btnClick() {
+    text: "Send Image",
+    type: "button",
+    click() {
       window.Smooch.sendMessage(
         {
-          type: 'image',
+          type: "image",
           mediaUrl: getRandomImageUrl(),
         },
-        Smooch.getDisplayedConversation().id
+        Smooch.getDisplayedConversation().id,
       );
     },
   },
   docs: {
-    btnText: 'Dev Docs',
-    btnType: 'button',
-    btnClick() {
+    text: "Dev Docs",
+    type: "button",
+    click() {
       window.open(
-        'https://github.com/zendesk/sunshine-conversations-web',
-        '_blank'
+        "https://github.com/zendesk/sunshine-conversations-web",
+        "_blank",
       );
     },
   },
@@ -120,83 +113,83 @@ const suncoButtons = {
 
 const zendeskButtons = {
   openMessaging: {
-    btnText: 'Open',
-    btnType: 'button',
-    btnClick() {
-      window.zE('messenger', 'open');
+    text: "Open",
+    type: "button",
+    click() {
+      window.zE("messenger", "open");
     },
   },
   closeMessaging: {
-    btnText: 'Close',
-    btnType: 'button',
-    btnClick() {
-      window.zE('messenger', 'close');
+    text: "Close",
+    type: "button",
+    click() {
+      window.zE("messenger", "close");
     },
   },
   showMessaging: {
-    btnText: 'Show',
-    btnType: 'button',
-    btnClick() {
-      window.zE('messenger', 'show');
+    text: "Show",
+    type: "button",
+    click() {
+      window.zE("messenger", "show");
     },
   },
   hideMessaging: {
-    btnText: 'Hide',
-    btnType: 'button',
-    btnClick() {
-      window.zE('messenger', 'hide');
+    text: "Hide",
+    type: "button",
+    click() {
+      window.zE("messenger", "hide");
     },
   },
   loginMessaging: {
-    btnText: 'Login',
-    btnType: 'button',
-    btnClick() {
-      loginWidgets('zendesk');
+    text: "Login",
+    type: "button",
+    click() {
+      loginWidgets("zendesk");
     },
   },
   logoutMessaging: {
-    btnText: 'Logout',
-    btnType: 'button',
-    btnClick() {
-      window.zE('messenger', 'logoutUser');
+    text: "Logout",
+    type: "button",
+    click() {
+      window.zE("messenger", "logoutUser");
       userStore.$reset();
       metadataSet.value = false;
       changeAuthenticationStatus(false);
-      window.zE('messenger', 'close');
+      window.zE("messenger", "close");
     },
   },
   setMetadata: {
-    btnText: 'Set Metadata',
-    btnType: 'button',
-    btnClick() {
-      window.zE('messenger:set', 'conversationFields', [
-        { id: 17826865089553, value: 'test' },
+    text: "Set Metadata",
+    type: "button",
+    click() {
+      window.zE("messenger:set", "conversationFields", [
+        { id: 17826865089553, value: "test" },
       ]);
-      window.zE('messenger:set', 'conversationTags', [
-        'sales',
-        'computer_accessories',
+      window.zE("messenger:set", "conversationTags", [
+        "sales",
+        "computer_accessories",
       ]);
       metadataSet.value = true;
     },
   },
   callUs: {
-    btnText: 'Call us',
-    btnType: 'button',
-    btnClick() {
+    text: "Call us",
+    type: "button",
+    click() {
       window.zE(
-        'messenger:open',
-        'voice',
-        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID
+        "messenger:open",
+        "voice",
+        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID,
       );
     },
   },
   docs: {
-    btnText: 'Dev Docs',
-    btnType: 'button',
-    btnClick() {
+    text: "Dev Docs",
+    type: "button",
+    click() {
       window.open(
-        'https://developer.zendesk.com/api-reference/widget-messaging/web/core/',
-        '_blank'
+        "https://developer.zendesk.com/api-reference/widget-messaging/web/core/",
+        "_blank",
       );
     },
   },
