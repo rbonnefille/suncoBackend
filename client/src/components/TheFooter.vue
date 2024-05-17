@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
 const userAgent = ref(window.navigator.userAgent);
 const browserLocale = ref(window.navigator.language);
