@@ -37,7 +37,7 @@ const additionalRoutes = [
   {
     to: "/sunco/snippets/web-widget",
     target: "_blank",
-    text: "SunCo Web Widget Snippets",
+    text: "Web Widget Snippets",
   },
   {
     to: "/sunco/users",

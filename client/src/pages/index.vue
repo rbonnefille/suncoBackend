@@ -31,7 +31,7 @@ const routes = [
   },
   {
     to: "/sunco/snippets/web-widget",
-    text: "SunCo Web Widget Snippets",
+    text: "Web Widget Snippets",
   },
   {
     to: "/sunco/users",
