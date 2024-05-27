@@ -1,5 +1,25 @@
 export const snippets = [
   {
+    id: 'Remove current Zendesk Widget and initialise a new widget',
+    description:
+      'A way to remove the current Zendesk widget and initialise a new one with a different key id',
+    content: `
+      // remove old widget
+      zE('messenger', 'hide'); zE('messenger', 'logoutUser');
+      document.getElementById('ze-snippet').remove();
+      window.zE = undefined;
+      window.zEmbed = undefined;
+      window.zEACLoaded = undefined;
+      window.zESettings = undefined;
+
+      // add new widget
+      var my_awesome_script = document.createElement('script');
+      my_awesome_script.id = "ze-snippet";
+      my_awesome_script.setAttribute('src','https://static.zdassets.com/ekr/snippet.js?key=<key-goes-here>');
+      document.head.appendChild(my_awesome_script);
+    `,
+  },
+  {
     id: 'Set Custom Metadata using Zendesk SDK formatting',
     description: 'A way to set custom metadata using Zendesk SDK formatting',
     content: `
