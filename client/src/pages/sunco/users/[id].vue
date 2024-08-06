@@ -8,9 +8,9 @@
       <div class="row row-cols-2">
         <div class="col">
           <div class="card">
-            <div class="card-header bg-body-secondary">User</div>
+            <div class="card-header bg-body-secondary fw-bold">User</div>
             <ul class="list-group list-group-flush">
-              <VDataItem :loading="isLoading" label="User id" :value="suncoUser?.id" />
+              <VDataItem :loading="isLoading" label="id" :value="suncoUser?.id" />
               <VDataItem :loading="isLoading" label="External id" :value="suncoUser?.externalId" />
               <VDataItem :loading="isLoading" label="signedUpAt" :value="suncoUser?.signedUpAt" />
               <ul class="list-group-item">
@@ -39,11 +39,13 @@
         <div class="col">
           <div v-for="(clients, key) in suncoUserClients" :key="key" class="col">
             <div class="card">
-              <div class="card-header bg-body-secondary"><span>
-                  <img :src="integrationIcons[clients.type] ||
-      integrationIcons.default
+              <div class="card-header bg-body-secondary fw-bold">
+                <span>
+                  <img :src="integrationIcons[clients.type] || integrationIcons.default
       " :alt="clients.type" width="20" height="20" class="align-middle" />
-                </span> {{ clients.type }} client </div>
+                </span>
+                {{ clients.type }} client
+              </div>
               <ul class="list-group list-group-flush">
                 <template v-for="(client, key) in clients" :key="key">
                   <VDataItem :loading="isLoading" :label="key" :value="client" />
@@ -54,11 +56,18 @@
         </div>
       </div>
     </div>
-    <div class="row row-cols-4">
+    <h2 class="mt-3 collapsable" data-bs-toggle="collapse" href="#collapseDevices" role="button" aria-expanded="false"
+      aria-controls="collapseDevices" @click="devicesCollapsed = !devicesCollapsed">
+      <span style="cursor: pointer" data-bs-toggle="tooltip" data-bs-placement="top" title="Devices">
+        Devices
+        <ChevronDownIcon v-if="devicesCollapsed" style="height: 24px; height: 24px" />
+      </span>
+    </h2>
+    <div class="row row-cols-4 collapse" id="collapseDevices">
       <template v-for="(device, key) in suncoUserDevices" :key="key">
         <div class="col">
           <div class="card">
-            <div class="card-header bg-body-secondary">Device {{ key }}</div>
+            <div class="card-header bg-body-secondary fw-bold">Device {{ key }}</div>
             <ul class="list-group list-group-flush">
               <VDataItem :loading="isLoading" label="device id" :value="device?.id" />
               <VDataItem :loading="isLoading" label="guid" :value="device?.guid" />
@@ -78,13 +87,21 @@
         </div>
       </template>
     </div>
-    <h2 class="mt-3">Conversations</h2>
-    <div class="row row-cols-4">
+    <h2 class="mt-3 collapsable" data-bs-toggle="collapse" href="#collapseConversations" role="button"
+      aria-expanded="false" aria-controls="collapseConversations"
+      @click="conversationsCollapsed = !conversationsCollapsed">
+      <span style="cursor: pointer" data-bs-toggle="tooltip" data-bs-placement="top" title="Conversations">
+        Conversations
+        <ChevronDownIcon v-if="conversationsCollapsed" style="height: 24px; height: 24px" />
+      </span>
+    </h2>
+    <div class="row row-cols-4 collapse" id="collapseConversations">
       <div v-for="(conversations, key) in conversationsByTime" :key="key" class="col">
         <div v-if="conversations" class="card">
-          <div class="card-header bg-body-secondary">Conversation</div>
-          <ul class="list-group list-group-flush">
+          <div class="card-header bg-body-secondary fw-bold">
             <VDataItem :loading="isLoading" label="id" :value="conversations.id" />
+          </div>
+          <ul class="list-group list-group-flush">
             <VDataItem :loading="isLoading" label="type" :value="conversations.type" :class-name="[
       {
         'fs-7 fw-bold text-success':
@@ -105,8 +122,8 @@
             <ul class="list-group-item">
               activeSwitchboardIntegration:
               <template v-for="(
-                    sbIntegration, sbIntegrationKey
-                  ) in conversations.activeSwitchboardIntegration" :key="sbIntegrationKey">
+                  sbIntegration, sbIntegrationKey
+                ) in conversations.activeSwitchboardIntegration" :key="sbIntegrationKey">
                 <VDataItem :loading="isLoading" :label="sbIntegrationKey" :value="sbIntegration" />
               </template>
             </ul>
@@ -120,7 +137,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
 import VDataItem from "@/components/VDataItem.vue";
 import VError from "@/components/VError.vue";
 import { integrationIcons } from "@/utils/integrationIcons.js";
@@ -134,8 +151,12 @@ import {
   fetchSunCoUser,
   errorMessage,
 } from "@/utils/sunco.js";
+import { ChevronDownIcon } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
+
+const devicesCollapsed = ref(true);
+const conversationsCollapsed = ref(true);
 
 const conversationsByTime = computed(() => {
   return suncoUserConversations.value?.slice(0).sort((a, b) => {
@@ -164,5 +185,9 @@ onBeforeMount(async () => {
 <style lang="css">
 .card {
   margin-top: 1rem;
+}
+
+.collapsable:hover {
+  text-decoration: underline;
 }
 </style>
