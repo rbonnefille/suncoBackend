@@ -24,6 +24,12 @@
               <VDataItem label="id" :value="integration.id" />
               <VDataItem label="status" :value="integration.status === 'active' ? '✅' : integration.status
       " />
+              <ul v-if="integration.defaultResponder" class="list-group-item">
+                Per-channel responder:
+                <template v-for="(perChannelResponder, key) in integration?.defaultResponder" :key="key">
+                  <VDataItem :loading="isLoading" :label="key" :value="perChannelResponder" />
+                </template>
+              </ul>
             </ul>
           </div>
         </div>
@@ -38,15 +44,15 @@ import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 import { integrationIcons } from "@/utils/integrationIcons.js";
 import VDataItem from "@/components/VDataItem.vue";
 import VError from "@/components/VError.vue";
-import { isLoading, integrations, fetchIntegrations } from "@/utils/sunco.js";
+import { isLoading, integrations, fetchIntegrations, errorMessage } from "@/utils/sunco.js";
 
 const integrationsByType = computed(() => {
   return integrations.value.slice(0).sort((a, b) => {
     if (a.type < b.type) {
-      return -1;
+      return 1;
     }
     if (a.type > b.type) {
-      return 1;
+      return -1;
     }
     return 0;
   });

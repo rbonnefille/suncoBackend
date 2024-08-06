@@ -371,6 +371,23 @@ class SunCoClient {
     }
   }
 
+  async listIntegrationsPerChannelResponder() {
+    const listIntegrations = await axios.get(
+      `${process.env.POD_BASE_URL}/v2/apps/${process.env.APP_ID}/integrations`,
+      {
+        headers: {
+          Authorization: `Basic ${btoa(`${process.env.KEY_ID}:${process.env.SECRET_KEY}`)}`,
+        },
+      }
+    );
+    try {
+      return await listIntegrations.data;
+    } catch (error) {
+      // catch error
+      return error.body?.errors[0]?.title || error.status;
+    }
+  }
+
   getUserIdOrExternalId(payload) {
     if (payload.hasOwnProperty('userId')) {
       return payload.userId;
