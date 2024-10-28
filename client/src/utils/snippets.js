@@ -23,7 +23,7 @@ export const snippets = [
     id: 'Set Custom Metadata using Zendesk SDK formatting',
     description: 'A way to set custom metadata using Zendesk SDK formatting',
     content: `
-      const {id: conversationId} = Smooch.getDisplayedConverstation();
+      const {id: conversationId} = Smooch.getDisplayedConversation();
       Smooch.updateConversation(conversationId, {
         metadata: {
           "zen:ticket:tags": "[tag1, tag2]",
