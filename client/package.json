@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.5.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,25 +11,25 @@
     "prettier": "prettier --write '**/*.{css,js,json,vue}'"
   },
   "dependencies": {
-    "@heroicons/vue": "^2.1.5",
-    "@vueuse/core": "^10.11.0",
+    "@heroicons/vue": "^2.2.0",
+    "@vueuse/core": "^12.0.0",
     "bootstrap": "^5.3.3",
-    "pinia": "^2.2.1",
-    "vue": "^3.4.35",
-    "vue-router": "^4.4.2",
+    "pinia": "^2.2.8",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
     "vue-spinner": "^1.0.4",
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.2",
-    "eslint": "^9.8.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-vue": "^9.27.0",
-    "prettier": "^3.3.3",
-    "sass": "^1.77.8",
-    "unplugin-vue-components": "^0.27.3",
+    "eslint-plugin-vue": "^9.31.0",
+    "prettier": "^3.4.1",
+    "sass": "^1.81.0",
+    "unplugin-vue-components": "^0.27.5",
     "unplugin-vue-router": "^0.8.8",
-    "vite": "^5.3.5",
+    "vite": "^6.0.1",
     "vite-plugin-vue-layouts": "^0.11.0"
   }
 }
