@@ -1,3 +1,4 @@
+# Purpose
 This project is an application using ExpressJS for the backend and Vue.js for the frontend, designed to test diverse the Messaging widgets and interact with the Zendesk Messaging backend (Sunshine Conversations AKA SunCo). 
 
 # Installation
