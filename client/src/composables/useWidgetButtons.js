@@ -14,11 +14,11 @@ const metadataSet = ref(false);
 const customerMetadataSet = ref(false);
 const htmlTag = document.querySelector('html');
 
-const updateWidgetLocale = locale => {
+const updateWidgetLocale = (locale) => {
   window.zE('messenger:set', 'locale', `${locale}`);
 };
 
-const updateCookieConsent = range => {
+const updateCookieConsent = (range) => {
   zE('messenger:set', 'cookies', `${range}`);
 };
 
@@ -34,7 +34,7 @@ const isDark = useDark({
 
 const toggleDark = useToggle(isDark);
 
-const lightTheme = {
+const darkTheme = {
   primary: '#d1f470',
   onPrimary: '#000000',
   message: '#355e34',
@@ -52,7 +52,7 @@ const lightTheme = {
   onSecondaryAction: '#FFFFFF',
 };
 
-const darkTheme = {
+const lightTheme = {
   primary: '#d1f470',
   onPrimary: '#000000',
   message: 'rgb(17, 17, 13)',
@@ -74,11 +74,11 @@ const changeColors = () => {
   toggleDark();
   if (isDark.value) {
     window.zE('messenger:set', 'customization', {
-      theme: lightTheme,
+      theme: darkTheme,
     });
   } else {
     window.zE('messenger:set', 'customization', {
-      theme: darkTheme,
+      theme: lightTheme,
     });
   }
 };
@@ -119,7 +119,7 @@ const suncoButtons = {
       } else {
         useShowWarningToast(
           `No JWT in sessionStorage. Please login via the form`,
-          1500,
+          1500
         );
       }
     },
@@ -143,7 +143,7 @@ const suncoButtons = {
           type: 'image',
           mediaUrl: useGetRandomImageUrl(),
         },
-        Smooch.getDisplayedConversation().id,
+        Smooch.getDisplayedConversation().id
       );
     },
   },
@@ -153,7 +153,7 @@ const suncoButtons = {
     click() {
       window.open(
         'https://github.com/zendesk/sunshine-conversations-web',
-        '_blank',
+        '_blank'
       );
     },
   },
@@ -197,7 +197,7 @@ const zendeskButtons = {
       } else {
         useShowWarningToast(
           `No JWT in sessionStorage. Please login via the form`,
-          1500,
+          1500
         );
       }
     },
@@ -255,7 +255,7 @@ const zendeskButtons = {
       window.zE(
         'messenger:open',
         'voice',
-        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID,
+        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID
       );
     },
   },
@@ -288,7 +288,7 @@ const zendeskButtons = {
     click() {
       window.open(
         'https://developer.zendesk.com/api-reference/widget-messaging/web/core/',
-        '_blank',
+        '_blank'
       );
     },
   },
