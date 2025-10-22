@@ -9,51 +9,19 @@
             : `${title}`
         }}
       </h2>
-      <button @click="toggleDark()" class="btn btn-sm text-white">
-        <template v-if="isDark">
-          <MoonIcon style="height: 24px; height: 24px;" />
-        </template>
-        <template v-else>
-          <SunIcon style="height: 24px; height: 24px;" />
-        </template>
-      </button>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { useUserStore } from "@/stores/store";
-import { useDark, useToggle } from '@vueuse/core';
-import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
+  import { useUserStore } from '@/stores/store';
+  const userStore = useUserStore();
 
-
-
-const htmlTag = document.querySelector('html');
-
-const isDark = useDark({
-  onChanged(dark) {
-    if (dark) {
-      htmlTag.setAttribute('data-bs-theme', 'dark');
-    } else {
-      htmlTag.setAttribute('data-bs-theme', 'light');
-    }
-  },
-});
-const toggleDark = useToggle(isDark)
-
-const userStore = useUserStore();
-
-defineProps({
-  title: {
-    type: String,
-    required: false,
-    default: "Acme corp Dashboard",
-  },
-});
+  defineProps({
+    title: {
+      type: String,
+      required: false,
+      default: 'Acme corp Dashboard',
+    },
+  });
 </script>
-
-<style scoped>
-nav {
-  background: #16140c;
-}
-</style>

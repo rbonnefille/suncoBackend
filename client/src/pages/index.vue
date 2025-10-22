@@ -6,8 +6,13 @@
         🚧 This is a dashboard for SunCo/Messaging. It is a work in progress.
       </h4>
       <div class="d-grid gap-2 flex justify-content-sm-center">
-        <RouterLink v-for="(route, index) in routes" :key="route.to" :to="route.to" :target="route.target"
-          class="btn btn-lg" v-bind="$attrs">
+        <RouterLink
+          v-for="(route, index) in filteredRoutes"
+          :key="index"
+          :to="route.to"
+          :target="route.target"
+          class="btn btn-lg"
+          v-bind="$attrs">
           {{ route.text }}
         </RouterLink>
       </div>
@@ -16,47 +21,33 @@
 </template>
 
 <script setup>
-const routes = [
-  {
-    to: "/dashboard",
-    text: "Go to the Dashboard",
-  },
-  {
-    to: "/sunco/integrations",
-    text: "Check SunCo integrations",
-  },
-  {
-    to: "/sunco/integrations/switchboard",
-    text: "Switchboard Configuration",
-  },
-  {
-    to: "/sunco/snippets/web-widget",
-    text: "Web Widget Snippets",
-  },
-  {
-    to: "/sunco/users",
-    text: "Check SunCo User",
-  }
-];
+  import { computed } from 'vue';
+  import { suncoRoutes } from '@/router/suncoRoutes';
+
+  const filteredRoutes = computed(() => {
+    return suncoRoutes.filter(route => route.to !== '/');
+  });
 </script>
 
-<route lang="json">{
+<route lang="json">
+{
   "name": "Home",
   "meta": {
     "layout": "home",
     "title": "Home"
   }
-}</route>
+}
+</route>
 <style lang="css" scoped>
-a:hover {
-  background-color: #9a4497;
-  color: white;
-}
+  a:hover {
+    background-color: #355e34;
+    color: white;
+  }
 
-a {
-  background: #f6f0e6;
-  border: none;
-  color: #16140c;
-  margin-bottom: 1px;
-}
+  a {
+    background: #f5f5f2;
+    border: none;
+    color: #16140c;
+    margin-bottom: 1px;
+  }
 </style>

@@ -1,0 +1,118 @@
+nav {
+  background: #11110d;
+}
+
+h4 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+a:hover,
+.routes:hover {
+  background-color: #355e34;
+  color: white;
+}
+
+a,
+.routes {
+  background: #f5f5f2;
+  border: none;
+  color: #16140c;
+  text-align: center;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.widgetBtn {
+  background: #e6faab;
+  border: none;
+  color: #16140c;
+  text-align: center;
+  margin-right: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.widgetBtn:focus,
+.widgetBtn:hover {
+  background-color: #355e34;
+  color: #ffffff;
+}
+
+.toolsBtn {
+  background: #feeb7e;
+  border: none;
+  color: #16140c;
+  text-align: center;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.toolsBtn:focus,
+.toolsBtn:hover {
+  background-color: #df0d33;
+  color: #ffffff;
+}
+
+.customBtn,
+.customBtn:disabled {
+  background: #d1f470;
+  border: none;
+  color: #16140c;
+  text-align: center;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.customBtn:focus,
+.customBtn:hover {
+  background-color: #355e34;
+  color: #ffffff;
+}
+
+.formBtn {
+  background: #2d4c33;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.formBtn:focus,
+.formBtn:hover {
+  background-color: #355e34;
+  color: #ffffff;
+}
+
+input:focus,
+input[type='text']:focus,
+input[type='email']:focus {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+  border-color: #16140c !important;
+  outline: 0 !important;
+  box-shadow: -2px 5px 2px 0rem #16140c !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.card {
+  margin-top: 1rem;
+}
+
+.collapsable:hover {
+  text-decoration: underline;
+}
+
+.toast-body {
+  background: #d1f470;
+  color: #16140c;
+}

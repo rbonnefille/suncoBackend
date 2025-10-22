@@ -1,4 +1,14 @@
-export const snippets = [
+export const widgetSnippets = [
+  {
+    id: 'Pass href locale to metadata',
+    description: 'Pass href locale to metadata',
+    content: `
+      const currentUrl = new URL(window.location.href);
+      const pathSegments = currentUrl.pathname.split('/');
+      const languageRegionCode = pathSegments.includes('hc') ? pathSegments[pathSegments.indexOf('hc') + 1] : '';
+    `,
+    for: 'zendesk',
+  },
   {
     id: 'Remove current Zendesk Widget and initialise a new widget',
     description:
@@ -18,6 +28,7 @@ export const snippets = [
       my_awesome_script.setAttribute('src','https://static.zdassets.com/ekr/snippet.js?key=<key-goes-here>');
       document.head.appendChild(my_awesome_script);
     `,
+    for: 'zendesk',
   },
   {
     id: 'Set Custom Metadata using Zendesk SDK formatting',
@@ -26,11 +37,12 @@ export const snippets = [
       const {id: conversationId} = Smooch.getDisplayedConversation();
       Smooch.updateConversation(conversationId, {
         metadata: {
-          "zen:ticket:tags": "[tag1, tag2]",
+          "zen:ticket:tags": "tag1, tag2",
           "zen:ticket_field:<ticket_field_id>": "<value>"
         }
       });
   `,
+    for: 'sunco',
   },
   {
     id: `Add text in the conversation's header`,
@@ -66,6 +78,7 @@ export const snippets = [
     );
   </script>
   `,
+    for: 'sunco',
   },
   {
     id: 'Custom CSS',
@@ -165,6 +178,7 @@ export const snippets = [
         );
     </script>
 `,
+    for: 'sunco',
   },
   {
     id: 'Embedded',
@@ -179,6 +193,7 @@ setTimeout(() => {
     Smooch.render(document.getElementById('chat-container'));
 }, 1000);
 </script>`,
+    for: 'sunco',
   },
   {
     id: 'Widget Left',
@@ -217,6 +232,7 @@ setTimeout(() => {
     );
   </script>
 </body>`,
+    for: 'sunco',
   },
   {
     id: 'Event Listener Create Conversation',
@@ -256,6 +272,7 @@ setTimeout(() => {
       }
     }
   </script>`,
+    for: 'sunco',
   },
   {
     id: 'Hide Agent Name',
@@ -349,6 +366,7 @@ setTimeout(() => {
         }
     }
     `,
+    for: 'sunco',
   },
   {
     id: 'Delegates',
@@ -368,6 +386,81 @@ setTimeout(() => {
         }
         return message;
       }
+    ------------------------------------------------------------------------------------
+    // Or something similar for the Messaging triggers
+
+    delegate: {
+    beforeDisplay(message, data) {
+      const businessIconUrl =
+        'https://prod3-sprcdn-assets.sprinklr.com/160977/e42863f9-cba8-45ad-a070-12c4be85041d-2041374914/Chatbot_p.jpg';
+      if (
+        message.role === 'business' &&
+        message.source.type === 'zd:agentWorkspace'
+      ) {
+        console.log(
+          message.avatarUrl.includes('static.zdassets.com') &&
+            !!message.metadata['__zendesk_msg.trigger.id']
+        );
+        if (
+          message.avatarUrl.includes('static.zdassets.com') &&
+          message.metadata &&
+          Object.prototype.hasOwnProperty.call(
+            message.metadata,
+            '__zendesk_msg.trigger.id'
+          )
+        ) {
+          message.avatarUrl = businessIconUrl;
+        }
+      }
+      return message;
+    },
+  },    
     `,
+    for: 'sunco',
+  },
+  {
+    id: 'Hide Powered by Sunshine Conversations',
+    description: "Hide the 'Powered by Sunshine Conversations' text",
+    content: `Smooch.on('ready', function() {
+      const iframe = document.getElementById('web-messenger-container');
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      const style = iframeDoc.createElement('style');
+      style.type = 'text/css';
+      style.appendChild(iframeDoc.createTextNode('.messages-container .logo { display: none; }'));
+      iframeDoc.head.appendChild(style);
+    })`,
+    for: 'sunco',
+  },
+  {
+    id: 'Hide input field from footer',
+    description: 'Hide the input field from the footer',
+    content: `
+      const toggleFooter = (showInput) => {
+      const iframe = document.querySelector('iframe');
+      const footer = iframe.contentDocument.querySelector('#footer');
+      if (!showInput) {
+        if (footer) {
+          iframe.contentDocument.querySelector('#footer').style.display = 'none';
+        }
+      } else {
+        if (footer) {
+          iframe.contentDocument.querySelector('#footer').style.display = 'flex';
+        }
+      }
+    };
+    Smooch.init({
+      integrationId: '60a38972b203a100d3e29c51',
+      canUserSeeConversationList: false,
+    }).then(function () {
+      const conversation = Smooch.getDisplayedConversation();
+      toggleFooter(conversation.metadata.showInput);
+    });
+    Smooch.on('message:received', function (message, data) {
+      if (message.metadata) {
+        toggleFooter(message.metadata.showInput);
+      }
+    });
+    `,
+    for: 'sunco',
   },
 ];

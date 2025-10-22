@@ -1,5 +1,8 @@
 import { ref } from 'vue';
-import { showSuccessToast, showWarningToast } from './helpers.js';
+import {
+  useShowSuccessToast,
+  useShowWarningToast,
+} from '@/composables/helpers';
 
 const suncoUser = ref(null);
 const suncoUserClients = ref(null);
@@ -14,16 +17,17 @@ const integrations = ref(null);
 const isSwitchboardEnabled = ref(null);
 const errorMessage = ref(null);
 const defaultSwitchboardIntegrationIdSelected = ref(null);
-const selectedIntegrationId = ref({});
+const selectedNextSwitchboardIntegrationId = ref({});
 
 const smoochConfig = {
   integrationId: import.meta.env.VITE_SUNCO_INTEGRATION_ID,
   canUserSeeConversationList: true,
   soundNotificationEnabled: false,
+  // integrationOrder: []
   // customColors: {
   //   brandColor: 'FFFFFF',
-  //   conversationColor: '#9a4497',
-  //   actionColor: 'F6F0E6',
+  //   conversationColor: '#D1F470',
+  //   actionColor: 'F5F5F2',
   // },
   // delegate: {
   //   beforeDisplay(message, data) {
@@ -39,26 +43,60 @@ const smoochConfig = {
   //   },
   // },
 };
-const addOnclickListener = () => {
+
+// const toggleFooter = (showInput) => {
+//   const iframe = document.querySelector('iframe');
+//   const footer = iframe.contentDocument.querySelector('#footer');
+//   if (!showInput) {
+//     if (footer) {
+//       iframe.contentDocument.querySelector('#footer').style.display = 'none';
+//     }
+//   } else {
+//     if (footer) {
+//       iframe.contentDocument.querySelector('#footer').style.display = 'flex';
+//     }
+//   }
+// };
+
+const useLoginUserSunCoWidget = async (external_id, token) => {
+  const checkSunCoLoaded = () => {
+    return new Promise(resolve => {
+      const interval = setInterval(() => {
+        if (window.Smooch) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 500);
+    });
+  };
+
+  await checkSunCoLoaded();
+  window.Smooch.login(external_id, token);
+  window.Smooch.open();
+};
+
+const useAddOnclickListener = () => {
   const webMessenger = document.getElementById('web-messenger-container');
   const messengerContent = webMessenger.contentDocument;
-  messengerContent.addEventListener('click', (event) => {
+  messengerContent.addEventListener('click', event => {
     setTimeout(async () => {
       if (event.target.tagName.toLowerCase() === 'button') {
-        window.Smooch.createConversation().then((conversation) =>
-          window.Smooch.loadConversation(conversation.id)
+        window.Smooch.createConversation().then(conversation =>
+          window.Smooch.loadConversation(conversation.id),
         );
       }
     }, 100);
   });
 };
 
-export const initSunco = () => {
+export const useInitSunco = () => {
   window.Smooch.init(smoochConfig).then(() => {
     console.log('SunCo widget ready');
     const user = window.Smooch.getUser();
     console.log(user);
-    addOnclickListener();
+    // const conversation = Smooch.getDisplayedConversation();
+    // toggleFooter(conversation.metadata.showInput);
+    useAddOnclickListener();
     // if (
     //   Smooch.getConversations().length === 0 ||
     //   !Smooch.getConversations().find(
@@ -87,8 +125,11 @@ export const initSunco = () => {
     // }
   });
 
-  window.Smooch.on('widget:opened', () => {
-    if (
+  window.Smooch.on('widget:opened', async () => {
+    const conversations = await window.Smooch.getConversations();
+    if (conversations && conversations.length) {
+      window.Smooch.loadConversation(conversations[0].id);
+    } else if (
       !window.Smooch.getUser() ||
       window.Smooch.getConversations().length === 0
     ) {
@@ -106,10 +147,37 @@ export const initSunco = () => {
     // if (window.Smooch.getConversations().length === 0) {
     //   window.Smooch.destroy();
     // }
+    const iframe = document.getElementById('web-messenger-container');
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    const style = iframeDoc.createElement('style');
+    style.type = 'text/css';
+    style.appendChild(
+      iframeDoc.createTextNode('.messages-container .logo { display: none; }'),
+    );
+    iframeDoc.head.appendChild(style);
   });
+  // Smooch.on('message:received', function (message, data) {
+  //   if (message.metadata) {
+  //     toggleFooter(message.metadata.showInput);
+  //   }
+  // });
 };
 
-const fetchSunCoUser = async (userId) => {
+const useFetchConversations = async userId => {
+  try {
+    const conversationsResponse = await fetch(`/users/${userId}/conversations`);
+    const conversationsData = await conversationsResponse.json();
+    if (conversationsData.error) {
+      throw new Error(conversationsData.error);
+    }
+    suncoUserConversations.value = conversationsData.conversations;
+  } catch (error) {
+    errorMessage.value = error.message;
+    console.error(error);
+  }
+};
+
+const useFetchSunCoUser = async userId => {
   try {
     isLoading.value = true;
     const [
@@ -142,7 +210,7 @@ const fetchSunCoUser = async (userId) => {
         userData.error ||
           clientsData.error ||
           conversationsData.error ||
-          devicesData.error
+          devicesData.error,
       );
     }
 
@@ -158,7 +226,7 @@ const fetchSunCoUser = async (userId) => {
   isLoading.value = false;
 };
 
-const fetchIntegrations = async () => {
+const useFetchIntegrations = async () => {
   try {
     isLoading.value = true;
     const response = await fetch('/integrations');
@@ -168,18 +236,47 @@ const fetchIntegrations = async () => {
     }
     integrations.value = data.integrations;
   } catch (error) {
-    showWarningToast(error.message);
+    useShowWarningToast(error.message);
   }
   isLoading.value = false;
 };
 
-const updateSwitchboard = async (
+const useUpdateIntegration = async (
+  integrationId,
+  canUserCreateMoreConversations,
+  canUserSeeConversationList,
+  defaultResponderId,
+) => {
+  try {
+    isLoading.value = true;
+    const response = await fetch(`/integrations/${integrationId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        canUserCreateMoreConversations,
+        canUserSeeConversationList,
+        defaultResponderId,
+      }),
+    });
+    await response.json();
+    useShowSuccessToast(`Integration ${integrationId} updated`);
+    await useFetchIntegrations();
+  } catch (error) {
+    console.error('An error occurred while updating the integration:', error);
+    useShowWarningToast(error);
+  }
+  isLoading.value = false;
+};
+
+const useUpdateSwitchboard = async (
   enabled = true,
-  defaultSwitchboardIntegrationId
+  defaultSwitchboardIntegrationId,
 ) => {
   try {
     isLoadingSwitchboardUpdate.value = true;
-    const response = await fetch('/integrations/switchboards', {
+    const response = await fetch('/switchboards', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -191,49 +288,55 @@ const updateSwitchboard = async (
     });
     const data = await response.json();
     switchboards.value = data.switchboard;
-    showSuccessToast('Switchboard updated');
+    useShowSuccessToast('Switchboard updated');
   } catch (error) {
     console.error('An error occurred while updating the switchboard:', error);
-    showWarningToast(error);
+    useShowWarningToast(error);
   }
   isLoadingSwitchboardUpdate.value = false;
 };
 
-const updateSwitchboardIntegration = async (
+const useUpdateSwitchboardIntegration = async (
   switchboardIntegrationId,
-  nextSwitchboardIntegrationId
+  nextSwitchboardIntegrationId,
+  messageHistoryCount,
+  deliverStandbyEvents,
 ) => {
   try {
     isLoadingSwitchboardIntegrationUpdate.value = true;
-    const response = await fetch('/integrations/switchboardIntegration', {
+    const body = JSON.stringify({
+      switchboardIntegrationId,
+      nextSwitchboardIntegrationId,
+      messageHistoryCount,
+      deliverStandbyEvents,
+    });
+    const response = await fetch('/switchboards/switchboardIntegration', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        switchboardIntegrationId,
-        nextSwitchboardIntegrationId,
-      }),
+      body: body,
     });
-    const data = await response.json();
-    const { name: sbIntegrationName } = data.switchboardIntegration;
-    showSuccessToast(`Switchboard integration ${sbIntegrationName} updated`);
+    await response.json();
+    useShowSuccessToast(
+      `Switchboard integration ${switchboardIntegrationId} updated`,
+    );
   } catch (error) {
     console.error(
       'An error occurred while updating the switchboard integration:',
-      error
+      error,
     );
-    showWarningToast(error.message);
+    useShowWarningToast(error.message);
   }
   isLoadingSwitchboardIntegrationUpdate.value = false;
 };
 
-const fetchSwitchboardIntegrations = async () => {
+const useFetchSwitchboardIntegrations = async () => {
   try {
     isLoading.value = true;
     const [sbintegrationsResponse, switchboardsResponse] = await Promise.all([
-      fetch('/integrations/sbintegrations'),
-      fetch('/integrations/switchboards'),
+      fetch('/switchboards/switchboardIntegration'),
+      fetch('/switchboards'),
     ]);
     const sbintegrationsData = await sbintegrationsResponse.json();
     const switchboardsData = await switchboardsResponse.json();
@@ -247,27 +350,27 @@ const fetchSwitchboardIntegrations = async () => {
       : 'Disabled';
     defaultSwitchboardIntegrationIdSelected.value =
       switchboardsData?.switchboards[0].defaultSwitchboardIntegrationId;
-    // Populate the selectedIntegrationId object with the initial values of the nextSwitchboardIntegrationId for each switchboard integration
-    switchboardIntegrations.value.forEach((integration) => {
-      selectedIntegrationId.value[integration.id] =
+    // Populate the selectedNextSwitchboardIntegrationId object with the initial values of the nextSwitchboardIntegrationId for each switchboard integration
+    switchboardIntegrations.value.forEach(integration => {
+      selectedNextSwitchboardIntegrationId.value[integration.id] =
         integration.nextSwitchboardIntegrationId;
     });
   } catch (error) {
-    showWarningToast(error.message);
+    useShowWarningToast(error.message);
   }
   isLoading.value = false;
 };
 
-const createSwitchboardIntegration = async (
+const useCreateSwitchboardIntegration = async (
   integrationName,
   integrationId,
   deliverStandbyEvents,
   nextSwitchboardIntegrationId,
-  messageHistoryCount
+  messageHistoryCount,
 ) => {
   try {
     isLoadingSwitchboardIntegrationUpdate.value = true;
-    const response = await fetch('/integrations/switchboardIntegration', {
+    const response = await fetch('/switchboards/switchboardIntegration', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -281,21 +384,48 @@ const createSwitchboardIntegration = async (
       }),
     });
     const data = await response.json();
+    console.log(data);
     if (data.error) {
       throw new Error(data.error);
     }
     switchboardIntegrations.value.push(data.switchboardIntegration);
-    selectedIntegrationId.value[data.switchboardIntegration.id] =
+    selectedNextSwitchboardIntegrationId.value[data.switchboardIntegration.id] =
       data.switchboardIntegration.nextSwitchboardIntegrationId;
-    showSuccessToast('Switchboard integration created');
+    useShowSuccessToast('Switchboard integration created');
   } catch (error) {
     console.error(
       'An error occurred while updating the switchboard:',
-      error.message
+      error.message,
     );
-    showWarningToast(error.message);
+    useShowWarningToast(error.message);
   }
   isLoadingSwitchboardIntegrationUpdate.value = false;
+};
+
+const useDeleteConversations = async userId => {
+  try {
+    isLoading.value = true;
+    const response = await fetch(`/users/${userId}/conversations`, {
+      method: 'DELETE',
+    });
+    const data = await response.json();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    const message =
+      data.deletedConversations > 1
+        ? `${data.deletedConversations} conversations deleted`
+        : data.deletedConversations === 1
+          ? `${data.deletedConversations} conversation deleted`
+          : 'No conversation to delete';
+    useShowSuccessToast(message);
+    setTimeout(() => {
+      useFetchConversations(userId);
+      isLoading.value = false;
+    }, 2000);
+  } catch (error) {
+    useShowWarningToast(error.message);
+  }
 };
 
 export {
@@ -307,16 +437,19 @@ export {
   isSwitchboardEnabled,
   errorMessage,
   defaultSwitchboardIntegrationIdSelected,
-  selectedIntegrationId,
+  selectedNextSwitchboardIntegrationId,
   integrations,
   suncoUser,
   suncoUserClients,
   suncoUserConversations,
   suncoUserDevices,
-  fetchSunCoUser,
-  fetchIntegrations,
-  updateSwitchboard,
-  updateSwitchboardIntegration,
-  fetchSwitchboardIntegrations,
-  createSwitchboardIntegration,
+  useLoginUserSunCoWidget,
+  useFetchSunCoUser,
+  useFetchIntegrations,
+  useUpdateSwitchboard,
+  useUpdateSwitchboardIntegration,
+  useFetchSwitchboardIntegrations,
+  useCreateSwitchboardIntegration,
+  useDeleteConversations,
+  useUpdateIntegration,
 };

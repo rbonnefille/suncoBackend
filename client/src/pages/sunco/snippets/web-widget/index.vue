@@ -5,10 +5,27 @@
         v-model="selected"
         label="Filter by snippet"
         option-hint="Select a spinnet"
-        :options="snippets"
-      />
+        :options="filteredSnippets" />
     </div>
-    <div v-for="snippet in filteredSnippets" :key="snippet.id">
+    <div class="d-inline-block mb-2">
+      <label class="form-check-label mx-2">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          v-model="filterSuncoSnippets"
+          @change="onFilterCheckboxChanged" />
+        Sunco
+      </label>
+      <label class="form-check-label mx-2">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          v-model="filterZendeskSnippets"
+          @change="onFilterCheckboxChanged" />
+        Zendesk
+      </label>
+    </div>
+    <div v-for="snippet in selectedSnippet" :key="snippet.id">
       <p class="lead">
         {{ snippet.description }}
       </p>
@@ -18,33 +35,61 @@
 </template>
 
 <script setup>
-import { snippets } from "@/utils/snippets";
-import { useClipboard } from "@vueuse/core";
-import { ref, computed } from "vue";
-import VSelect from "@/components/VSelect.vue";
+  import { widgetSnippets } from '@/utils/widgetSnippets';
+  import { useClipboard } from '@vueuse/core';
+  import { ref, computed } from 'vue';
+  import VSelect from '@/components/VSelect.vue';
 
-const selected = ref(snippets[0].id);
-const source = ref(null);
-const copiedSnippetId = ref(null);
+  const selected = ref(widgetSnippets[0].id);
+  const source = ref(null);
+  const copiedSnippetId = ref(null);
+  const filterSuncoSnippets = ref(true);
+  const filterZendeskSnippets = ref(true);
 
-const { copy, copied, isSupported } = useClipboard({ source });
+  const { copy, copied, isSupported } = useClipboard({ source });
 
-const copySnippet = (snippet) => {
-  copy(snippet.content);
-  copiedSnippetId.value = snippet.id;
-};
+  const copySnippet = snippet => {
+    copy(snippet.content);
+    copiedSnippetId.value = snippet.id;
+  };
 
-const isCopied = (snippetId) => {
-  return copied && copiedSnippetId.value === snippetId;
-};
+  const isCopied = snippetId => {
+    return copied && copiedSnippetId.value === snippetId;
+  };
 
-const filteredSnippets = computed(() => {
-  if (selected.value) {
-    return snippets.filter((snippet) => snippet.id === selected.value);
-  } else {
-    return snippets;
-  }
-});
+  const onFilterCheckboxChanged = () => {
+    if (filteredSnippets.value && filteredSnippets.value.length > 0) {
+      selected.value = filteredSnippets.value[0].id;
+    } else {
+      filteredSnippets.value.push({
+        id: 'No snippets found',
+        description: 'No snippets found',
+        content: 'No snippets found',
+        for: 'sunco',
+      });
+      selected.value = filteredSnippets.value[0].id;
+    }
+  };
+
+  const filteredSnippets = computed(() => {
+    return widgetSnippets.filter(snippet => {
+      if (filterSuncoSnippets.value && filterZendeskSnippets.value) {
+        return snippet;
+      } else if (filterSuncoSnippets.value) {
+        return snippet.for === 'sunco';
+      } else if (filterZendeskSnippets.value) {
+        return snippet.for === 'zendesk';
+      }
+    });
+  });
+
+  const selectedSnippet = computed(() => {
+    if (selected.value) {
+      return widgetSnippets.filter(snippet => snippet.id === selected.value);
+    } else {
+      return widgetSnippets;
+    }
+  });
 </script>
 
 <route lang="json">
@@ -57,18 +102,18 @@ const filteredSnippets = computed(() => {
 </route>
 
 <style lang="css" scoped>
-pre code {
-  background-color: #fefaf2;
-  border: 1px solid #999;
-  border-radius: 8px;
-  display: block;
-  padding: 10px;
-  position: relative;
-}
+  pre code {
+    background-color: #fefaf2;
+    border: 1px solid #999;
+    border-radius: 8px;
+    display: block;
+    padding: 10px;
+    position: relative;
+  }
 
-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+  button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 </style>

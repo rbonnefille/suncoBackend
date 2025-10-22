@@ -1,5 +1,8 @@
 // userStore.js
 import { defineStore } from 'pinia';
+import { useLoginUserZDWidget } from '@/composables/useZendesk';
+import { useLoginUserSunCoWidget } from '@/composables/useSunco';
+import { useGetSessionAuth } from '@/composables/helpers';
 
 // export const store = reactive({
 //   authenticated: false,
@@ -10,12 +13,12 @@ import { defineStore } from 'pinia';
 //   }
 // })
 
-export const useUserStore = defineStore({
-  id: 'user',
+export const useUserStore = defineStore('user', {
   state: () => ({
     authenticated: false,
     external_id: null,
     title: null,
+    sessionStorage: null,
   }),
   actions: {
     changeAuthenticationStatus(authenticated, external_id) {
@@ -23,36 +26,25 @@ export const useUserStore = defineStore({
       this.external_id = external_id;
     },
     loginWidgets(widget) {
-      const { external_id, token } =
-        JSON.parse(sessionStorage.getItem('suncoWidgetAuth')) || {};
+      const { token, external_id } = useGetSessionAuth();
       if (external_id && token) {
         this.changeAuthenticationStatus(true, external_id);
-        if (widget === 'sunco') {
-          window.Smooch.on('ready', function () {
-            console.log('the init has completed!');
-            window.Smooch.login(external_id, token);
-            window.Smooch.open();
-          });
-        } else if (widget === 'zendesk') {
-          window.zE('messenger', 'loginUser', (callback) => {
-            callback(token);
-            window.zE('messenger', 'open');
-          });
-        } else {
-          window.Smooch.on('ready', function () {
-            console.log('the init has completed!');
-            window.Smooch.login(external_id, token);
-            window.Smooch.open();
-          });
-          window.zE('messenger', 'loginUser', (callback) => {
-            callback(token);
-            window.zE('messenger', 'open');
-          });
+        switch (widget) {
+          case 'sunco':
+            useLoginUserSunCoWidget(external_id, token);
+            break;
+          case 'zendesk':
+            useLoginUserZDWidget(token);
+            break;
+          default:
+            useLoginUserSunCoWidget(external_id, token);
+            useLoginUserZDWidget(token);
+            break;
         }
       }
     },
     getters: {
-      connectedAs: (state) => {
+      connectedAs: state => {
         return `You are connected as: ${state.external_id}`;
       },
       // titleConnectedAs: (state) => {
