@@ -20,7 +20,7 @@
               <VDataItem v-if="suncoUser?.toBeRetained" :loading="isLoading" label="toBeRetained"
                 :value="suncoUser?.toBeRetained" />
               <VDataItem :loading="isLoading" label="authenticated" :value="suncoUser?.authenticated" />
-              <ul v-if="suncoUser?.profile.length > 0" class="list-group-item">
+              <ul v-if="Object.keys(suncoUser.profile).length > 0" class="list-group-item">
                 profile:
                 <template v-if="isLoading">
                   <VSkeleton v-for="n in 3" :key="n" :loading="isLoading" />
