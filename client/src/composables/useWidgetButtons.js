@@ -13,12 +13,17 @@ const { changeAuthenticationStatus, loginWidgets } = userStore;
 const metadataSet = ref(false);
 const customerMetadataSet = ref(false);
 const htmlTag = document.querySelector('html');
+const sidebarRef = ref(null);
 
-const updateWidgetLocale = (locale) => {
+const openSidebar = () => {
+  sidebarRef.value?.openSidebar();
+};
+
+const updateWidgetLocale = locale => {
   window.zE('messenger:set', 'locale', `${locale}`);
 };
 
-const updateCookieConsent = (range) => {
+const updateCookieConsent = range => {
   zE('messenger:set', 'cookies', `${range}`);
 };
 
@@ -53,8 +58,8 @@ const darkTheme = {
 };
 
 const lightTheme = {
-  primary: '#d1f470',
-  onPrimary: '#000000',
+  primary: '#000000',
+  onPrimary: '#ffffffff',
   message: 'rgb(17, 17, 13)',
   onMessage: '#FFFFFF',
   action: '#d1f470',
@@ -62,12 +67,12 @@ const lightTheme = {
   businessMessage: 'rgb(244, 246, 248)',
   onBusinessMessage: '#000000',
   background: '#FFFFFF',
-  onBackground: 'rgb(0 0 0 / 65%)',
+  onBackground: '#000000A6',
   error: '#CF6679',
   onError: '#000000',
   notify: '#d1f470',
   onNotify: '#000000',
-  onSecondaryAction: '#FFFFFF',
+  onSecondaryAction: '#000000',
 };
 
 const changeColors = () => {
@@ -119,7 +124,7 @@ const suncoButtons = {
       } else {
         useShowWarningToast(
           `No JWT in sessionStorage. Please login via the form`,
-          1500
+          1500,
         );
       }
     },
@@ -143,7 +148,7 @@ const suncoButtons = {
           type: 'image',
           mediaUrl: useGetRandomImageUrl(),
         },
-        Smooch.getDisplayedConversation().id
+        Smooch.getDisplayedConversation().id,
       );
     },
   },
@@ -153,7 +158,7 @@ const suncoButtons = {
     click() {
       window.open(
         'https://github.com/zendesk/sunshine-conversations-web',
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -172,6 +177,65 @@ const zendeskButtons = {
     type: 'button',
     click() {
       window.zE('messenger', 'close');
+    },
+  },
+  leftSide: {
+    text: 'Left Side',
+    type: 'button',
+    click() {
+      zE('messenger:set', 'customization', {
+        common: {
+          position: {
+            side: 'left',
+          },
+        },
+      });
+    },
+  },
+  rightSide: {
+    text: 'Right Side',
+    type: 'button',
+    click() {
+      zE('messenger:set', 'customization', {
+        common: {
+          position: {
+            side: 'right',
+          },
+        },
+      });
+    },
+  },
+  hideHeader: {
+    text: 'Hide header',
+    type: 'button',
+    click() {
+      zE('messenger:set', 'customization', {
+        common: {
+          hideHeader: true,
+        },
+      });
+    },
+  },
+  showHeader: {
+    text: 'Show header',
+    type: 'button',
+    click() {
+      zE('messenger:set', 'customization', {
+        common: {
+          hideHeader: false,
+        },
+      });
+    },
+  },
+  embeddedMode: {
+    text: 'Embedded Mode',
+    type: 'button',
+    click() {
+      openSidebar();
+      window.zE('messenger', 'render', {
+        mode: 'embedded',
+        widget: { targetElement: '#messenger-widget' },
+      });
     },
   },
   showMessaging: {
@@ -197,7 +261,7 @@ const zendeskButtons = {
       } else {
         useShowWarningToast(
           `No JWT in sessionStorage. Please login via the form`,
-          1500
+          1500,
         );
       }
     },
@@ -255,7 +319,7 @@ const zendeskButtons = {
       window.zE(
         'messenger:open',
         'voice',
-        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID
+        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID,
       );
     },
   },
@@ -288,7 +352,7 @@ const zendeskButtons = {
     click() {
       window.open(
         'https://developer.zendesk.com/api-reference/widget-messaging/web/core/',
-        '_blank'
+        '_blank',
       );
     },
   },
@@ -298,6 +362,7 @@ export {
   toolsButtons,
   suncoButtons,
   zendeskButtons,
+  sidebarRef,
   updateWidgetLocale,
   updateCookieConsent,
   metadataSet,

@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import VueRouter from 'unplugin-vue-router/vite';
-import Layouts from 'vite-plugin-vue-layouts';
 import MotionResolver from 'motion-v/resolver';
 
 // https://vitejs.dev/config/
@@ -14,11 +13,6 @@ export default defineConfig({
       extensions: ['.vue'],
       importMode: 'async',
       dts: './typed-router.d.ts',
-    }),
-    Layouts({
-      layoutsDirs: 'src/layouts',
-      pagesDirs: 'src/pages',
-      defaultLayout: 'default',
     }),
     vue(),
     Components({

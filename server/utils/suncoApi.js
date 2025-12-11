@@ -5,27 +5,59 @@ import SunshineConversationsClient from 'sunshine-conversations-client';
 
 const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
 
+const {
+  APP_ID: appId,
+  POD_BASE_URL: podBaseUrl,
+  KEY_ID: username,
+  SECRET_KEY: password,
+  BASE_URL: baseUrl,
+  SWITCHBOARD_ID: switchboardId,
+} = process.env;
+
 class SunCoClient {
   constructor() {
     this.setApiClient();
-    this.appId = process.env.APP_ID;
-    this.switchboardId = process.env.SWITCHBOARD_ID;
+    this.appId = appId;
+    this.switchboardId = switchboardId;
   }
   setApiClient() {
     const defaultClient = SunshineConversationsClient.ApiClient.instance;
     const basicAuth = defaultClient.authentications['basicAuth'];
-    basicAuth.username = process.env.KEY_ID;
-    basicAuth.password = process.env.SECRET_KEY;
-    defaultClient.basePath = process.env.POD_BASE_URL || process.env.BASE_URL;
+    basicAuth.username = username;
+    basicAuth.password = password;
+    defaultClient.basePath = podBaseUrl || baseUrl;
+  }
+
+  getUserIdOrExternalId(payload) {
+    if (payload.hasOwnProperty('userId')) {
+      return payload.userId;
+    } else if (payload.hasOwnProperty('externalId')) {
+      return payload.externalId;
+    }
+    return payload;
+  }
+
+  buildMessageContent(message, image, metadata) {
+    if (image) {
+      return {
+        type: 'image',
+        mediaUrl: image,
+        text: message,
+      };
+    }
+    return {
+      type: 'text',
+      text: message,
+      metadata,
+    };
   }
 
   async postActivity(payload) {
     const { conversationId, author } = payload;
     const apiInstance = new SunshineConversationsClient.ActivitiesApi();
-    const activityPost = {
-      author: author,
-      type: 'typing:start',
-    };
+    const activityPost = new SunshineConversationsClient.ActivityPost();
+    activityPost.author = author;
+    activityPost.type = 'typing:start';
     try {
       return await apiInstance.postActivity(
         this.appId,
@@ -44,20 +76,8 @@ class SunCoClient {
     await timeout(300);
     const apiInstance = new SunshineConversationsClient.MessagesApi();
     const messagePost = new SunshineConversationsClient.MessagePost();
-    messagePost.setAuthor(author);
-    if (image) {
-      messagePost.setContent({
-        type: 'image',
-        mediaUrl: image,
-        text: message,
-      });
-    } else {
-      messagePost.setContent({
-        type: 'text',
-        text: message,
-        metadata: metadata,
-      });
-    }
+    messagePost.author = author;
+    messagePost.content = this.buildMessageContent(message, image, metadata);
     try {
       return await apiInstance.postMessage(
         this.appId,
@@ -72,8 +92,16 @@ class SunCoClient {
   async listClients(payload) {
     const userIdOrExternalId = this.getUserIdOrExternalId(payload);
     const apiInstance = new SunshineConversationsClient.ClientsApi();
+    const opts = {
+      page: new SunshineConversationsClient.Page(),
+    };
+    opts.page.size = 100;
     try {
-      return await apiInstance.listClients(this.appId, userIdOrExternalId);
+      return await apiInstance.listClients(
+        this.appId,
+        userIdOrExternalId,
+        opts
+      );
     } catch (error) {
       // catch error
       return error.body?.errors[0]?.title || error.status;
@@ -93,9 +121,38 @@ class SunCoClient {
 
   async getUser(payload) {
     const userIdOrExternalId = this.getUserIdOrExternalId(payload);
-    const apiInstance = new SunshineConversationsClient.UsersApi();
+    const url = `${podBaseUrl}/v2/apps/${this.appId}/users/${userIdOrExternalId}`;
     try {
-      return await apiInstance.getUser(this.appId, userIdOrExternalId);
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return error.response?.data?.errors?.[0]?.title || error.response?.status;
+    }
+  }
+
+  async getUserByEmailIdentity(payload) {
+    const { email: userEmail } = payload;
+    const url = `${podBaseUrl}/v2/apps/${this.appId}/users?filter[identities.email]=${userEmail}`;
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return error.response?.data?.errors?.[0]?.title || error.response?.status;
+    }
+  }
+
+  async listParticipants(conversationId) {
+    const apiInstance = new SunshineConversationsClient.ParticipantsApi();
+    try {
+      return await apiInstance.listParticipants(this.appId, conversationId);
     } catch (error) {
       return error.body?.errors[0]?.title || error.status;
     }
@@ -142,114 +199,23 @@ class SunCoClient {
     }
   }
 
-  async updateConversation(payload) {
-    const { conversationId } = payload;
-    const apiInstance = new SunshineConversationsClient.ConversationsApi();
-    const conversationUpdateBody =
-      new SunshineConversationsClient.ConversationUpdateBody();
-    conversationUpdateBody.displayName = new Date().toLocaleString('en-us', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-    try {
-      return await apiInstance.updateConversation(
-        this.appId,
-        conversationId,
-        conversationUpdateBody
-      );
-    } catch (error) {
-      // catch error
-      return error.body?.errors[0]?.title || error.status;
-    }
-  }
-
   async listConversations(webhookData) {
-    const apiInstance = new SunshineConversationsClient.ConversationsApi();
-    const filter = new SunshineConversationsClient.ConversationListFilter();
     const userIdOrExternalId = this.getUserIdOrExternalId(webhookData);
-    if (Object.keys(userIdOrExternalId).length === 24) {
-      filter.setUserId(userIdOrExternalId);
-    } else {
-      filter.setUserExternalId(userIdOrExternalId);
-    }
-    try {
-      return await apiInstance.listConversations(this.appId, filter);
-    } catch (error) {
-      // catch error
-      return error.body?.errors[0]?.title || error.status;
-    }
-  }
+    const filter =
+      Object.keys(userIdOrExternalId).length === 24
+        ? `userId`
+        : `userExternalId`;
+    const url = `${podBaseUrl}/v2/apps/${this.appId}/conversations?filter[${filter}]=${userIdOrExternalId}&page[size]=100`;
 
-  async deleteConversation(conversationId) {
-    const apiInstance = new SunshineConversationsClient.ConversationsApi();
     try {
-      return await apiInstance.deleteConversation(this.appId, conversationId);
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
+        },
+      });
+      return response.data;
     } catch (error) {
-      // catch error
-      return error.body?.errors[0]?.title || error.status;
-    }
-  }
-
-  async passControl(
-    payload,
-    switchboardIntegration = process.env.NEXT_SWITCHBOARD_INTEGRATION
-  ) {
-    const { conversationId, metadata } = payload;
-    const apiInstance = new SunshineConversationsClient.SwitchboardActionsApi();
-    const passControlBody = new SunshineConversationsClient.PassControlBody();
-    passControlBody.switchboardIntegration = switchboardIntegration;
-    if (metadata) {
-      passControlBody.metadata = metadata;
-      console.log(
-        `Switchboard metadata sent ${JSON.stringify(passControlBody, null, 2)}`
-      );
-    }
-    try {
-      return await apiInstance.passControl(
-        this.appId,
-        conversationId,
-        passControlBody
-      );
-    } catch (error) {
-      // catch error
-      return error.body?.errors[0]?.title || error.status;
-    }
-  }
-
-  async offerControl(payload) {
-    const { conversationId, metadata } = payload;
-    const apiInstance = new SunshineConversationsClient.SwitchboardActionsApi();
-    const offerControlBody = new SunshineConversationsClient.OfferControlBody();
-    if (metadata) {
-      offerControlBody.metadata = metadata;
-      console.log(offerControlBody.metadata);
-    }
-    try {
-      return await apiInstance.offerControl(
-        this.appId,
-        conversationId,
-        offerControlBody
-      );
-    } catch (error) {
-      // catch error
-      return error.body?.errors[0]?.title || error.status;
-    }
-  }
-
-  async releaseControl(payload) {
-    const { conversationId } = payload;
-    const apiInstance = new SunshineConversationsClient.SwitchboardActionsApi();
-    const offerControlBody = new SunshineConversationsClient.OfferControlBody();
-    if (metadata) {
-      offerControlBody.metadata = metadata;
-      console.log(offerControlBody.metadata);
-    }
-    try {
-      return await apiInstance.releaseControl(this.appId, conversationId);
-    } catch (error) {
-      // catch error
-      return error.body?.errors[0]?.title || error.status;
+      return error.response?.data?.errors?.[0]?.title || error.response?.status;
     }
   }
 
@@ -300,16 +266,26 @@ class SunCoClient {
     }
   }
 
-  async updateSwitchboardIntegration(
-    switchboardIntegrationId,
-    nextSwitchboardIntegrationId
-  ) {
+  async updateSwitchboardIntegration(payload) {
+    let {
+      switchboardIntegrationId,
+      nextSwitchboardIntegrationId,
+      deliverStandbyEvents,
+      messageHistoryCount,
+    } = payload;
     const apiInstance =
       new SunshineConversationsClient.SwitchboardIntegrationsApi();
-    const switchboardIntegrationUpdateBody =
-      new SunshineConversationsClient.SwitchboardIntegrationUpdateBody();
-    switchboardIntegrationUpdateBody.nextSwitchboardIntegrationId =
-      nextSwitchboardIntegrationId;
+    let switchboardIntegrationUpdateBody = {
+      nextSwitchboardIntegrationId:
+        nextSwitchboardIntegrationId === undefined
+          ? undefined
+          : nextSwitchboardIntegrationId,
+      ...(deliverStandbyEvents !== undefined && {
+        deliverStandbyEvents: Boolean(deliverStandbyEvents),
+      }),
+      messageHistoryCount:
+        messageHistoryCount == 0 ? null : parseInt(messageHistoryCount, 10),
+    };
     try {
       return await apiInstance.updateSwitchboardIntegration(
         this.appId,
@@ -364,12 +340,26 @@ class SunCoClient {
     }
   }
 
+  async updateIntegration(integrationId, bodyParams) {
+    const apiInstance = new SunshineConversationsClient.IntegrationsApi();
+    try {
+      return await apiInstance.updateIntegration(
+        this.appId,
+        integrationId,
+        bodyParams
+      );
+    } catch (error) {
+      // catch error
+      return error.body?.errors[0]?.title || error;
+    }
+  }
+
   async listIntegrationsPerChannelResponder() {
     const listIntegrations = await axios.get(
-      `${process.env.POD_BASE_URL}/v2/apps/${process.env.APP_ID}/integrations`,
+      `${podBaseUrl}/v2/apps/${appId}/integrations?page[size]=100`,
       {
         headers: {
-          Authorization: `Basic ${btoa(`${process.env.KEY_ID}:${process.env.SECRET_KEY}`)}`,
+          Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
         },
       }
     );
@@ -381,14 +371,24 @@ class SunCoClient {
     }
   }
 
-  getUserIdOrExternalId(payload) {
-    if (payload.hasOwnProperty('userId')) {
-      return payload.userId;
-    } else if (payload.hasOwnProperty('externalId')) {
-      return payload.externalId;
+  async uploadAttachment(source, conversationId) {
+    const apiInstance = new SunshineConversationsClient.AttachmentsApi();
+    const access = 'public'; // String | The access level for the attachment. Currently the only available access level is public. Private is not supported.
+    const opts = {
+      _for: 'message', // String | Specifies the intended container for the attachment, to enable automatic attachment deletion (on deletion of associated message, conversation or user). For now, only message is supported. See [Attachments for Messages](#section/Attachments-for-Messages) for details.
+      conversationId: conversationId, // String | Links the attachment getting uploaded to the conversation ID.
+    };
+    try {
+      return await apiInstance.uploadAttachment(
+        this.appId,
+        access,
+        source,
+        opts
+      );
+    } catch (error) {
+      // catch error
+      return error.body?.errors[0]?.title || error.status;
     }
-    return payload;
   }
 }
-
 export default SunCoClient;

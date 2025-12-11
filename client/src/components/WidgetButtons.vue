@@ -35,11 +35,17 @@
   <VMetadataDisplay
     v-else-if="customerMetadataSet"
     :metadataCode="zendeskButtons.setCustomerMetadata.code" />
+  <VSidebar ref="sidebarRef">
+    <template #title>Embedded mode</template>
+    <template #default>
+      <div id="messenger-widget" style="width: 100%; height: 100%"></div>
+    </template>
+  </VSidebar>
 </template>
 
 <script setup>
-  import VButton from '@/components/VButton.vue';
   import VSelect from '@/components/VSelect.vue';
+  import VSidebar from '@/components/VSidebar.vue';
   import VButtonGroup from '@/components/VButtonGroup.vue';
   import VMetadataDisplay from '@/components/VMetadataDisplay.vue';
   import { reactive } from 'vue';
@@ -51,6 +57,7 @@
     updateCookieConsent,
     metadataSet,
     customerMetadataSet,
+    sidebarRef,
   } from '@/composables/useWidgetButtons';
 
   const locales = reactive({

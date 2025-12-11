@@ -1,10 +1,10 @@
 <template>
-  <form id="suncoData" class="row">
-    <h4 v-if="!authenticated">
+  <form v-if="!authenticated" id="suncoData" class="row">
+    <h4>
       {{ formMessageTitle }}
     </h4>
     <div class="row justify-content-center">
-      <div v-for="field in formFields" :key="field.id" class="col-md-4">
+      <div v-for="field in formFields" :key="field.id" class="col-md-3">
         <VLabel :id="field.id" :name="field.name" className="form-label" />
         <VInput
           :id="field.id"
@@ -12,6 +12,18 @@
           :name="field.name"
           :type="field.type"
           :placeholder="field.placeholder" />
+      </div>
+      <div class="col-md-2 d-flex align-items-end pb-2">
+        <div class="form-check">
+          <input
+            :id="'emailVerified'"
+            class="form-check-input"
+            type="checkbox"
+            v-model="form.emailVerified" />
+          <label class="form-check-label" :for="'emailVerified'"
+            >Email verified?</label
+          >
+        </div>
       </div>
     </div>
     <div class="row justify-content-center mt-3">
@@ -83,12 +95,19 @@
       type: 'email',
       placeholder: 'jane-doe@example.com',
     },
+    // {
+    //   id: 'emailVerified',
+    //   name: 'Email Verified',
+    //   type: 'checkbox',
+    //   placeholder: '',
+    // },
   ];
 
   const form = ref({
     external_id: null,
     name: null,
     email: null,
+    emailVerified: false,
   });
 
   const isFormInvalid = computed(
@@ -115,6 +134,7 @@
       external_id: null,
       name: null,
       email: null,
+      emailVerified: false,
     };
   };
 
@@ -122,6 +142,7 @@
     form.value.external_id = 'm-scott';
     form.value.email = 'michael-scott@example.com';
     form.value.name = 'Michael Scott';
+    form.value.emailVerified = true;
     submitForm();
   };
 

@@ -62,6 +62,6 @@
   const inputClass = computed(() => {
     return props.type === 'checkbox'
       ? 'form-check-input'
-      : 'form-control rounded-4';
+      : `form-control ${props.className}`;
   });
 </script>

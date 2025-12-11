@@ -8,6 +8,7 @@ const suncoUser = ref(null);
 const suncoUserClients = ref(null);
 const suncoUserConversations = ref(null);
 const suncoUserDevices = ref(null);
+const userIdentity = ref(null);
 const isLoadingSwitchboardUpdate = ref(false);
 const isLoadingSwitchboardIntegrationUpdate = ref(false);
 const switchboards = ref(null);
@@ -222,6 +223,27 @@ const useFetchSunCoUser = async userId => {
   } catch (error) {
     errorMessage.value = error.message;
     console.error(error);
+  }
+  isLoading.value = false;
+};
+
+const useFetchUserIdentity = async email => {
+  try {
+    isLoading.value = true;
+    const response = await fetch(`/users/listUser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email.trim() }),
+    });
+    userIdentity.value = await response.json();
+  } catch (error) {
+    console.error(
+      'An error occurred while searching for the user identity:',
+      error,
+    );
+    useShowWarningToast(error);
   }
   isLoading.value = false;
 };
@@ -443,6 +465,8 @@ export {
   suncoUserClients,
   suncoUserConversations,
   suncoUserDevices,
+  userIdentity,
+  useFetchUserIdentity,
   useLoginUserSunCoWidget,
   useFetchSunCoUser,
   useFetchIntegrations,

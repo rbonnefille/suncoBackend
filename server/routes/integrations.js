@@ -11,55 +11,11 @@ router.get('/', async (_, res) => {
   res.json(integrations);
 });
 
-router.get('/sbintegrations', async (_, res) => {
+router.patch('/:id', async (req, res) => {
+  const { id: integrationId } = req.params;
   const sunCo = new SunCoClient();
-  const switchboardIntegrations = await sunCo.listSwitchboardIntegrations();
-  res.json(switchboardIntegrations);
-});
-
-router.get('/switchboards', async (_, res) => {
-  const sunCo = new SunCoClient();
-  const switchboards = await sunCo.listSwitchboards();
-  res.json(switchboards);
-});
-
-router.patch('/switchboards', async (req, res) => {
-  const sunCo = new SunCoClient();
-  const { enabled, defaultSwitchboardIntegrationId } = req.body;
-  const switchboards = await sunCo.updateSwitchboard(
-    enabled,
-    defaultSwitchboardIntegrationId
-  );
-  res.json(switchboards);
-});
-
-router.patch('/switchboardIntegration', async (req, res) => {
-  const sunCo = new SunCoClient();
-  const { switchboardIntegrationId, nextSwitchboardIntegrationId } = req.body;
-  const switchboardIntegration = await sunCo.updateSwitchboardIntegration(
-    switchboardIntegrationId,
-    nextSwitchboardIntegrationId
-  );
-  res.json(switchboardIntegration);
-});
-
-router.post('/switchboardIntegration', async (req, res) => {
-  const sunCo = new SunCoClient();
-  const {
-    integrationName,
-    integrationId,
-    deliverStandbyEvents,
-    nextSwitchboardIntegrationId,
-    messageHistoryCount,
-  } = req.body;
-  const newSwitchboardIntegration = await sunCo.createSwitchboardIntegration(
-    integrationName,
-    integrationId,
-    deliverStandbyEvents,
-    nextSwitchboardIntegrationId,
-    messageHistoryCount
-  );
-  res.json(newSwitchboardIntegration);
+  const integrations = await sunCo.updateIntegration(integrationId, req.body);
+  res.json(integrations);
 });
 
 export default router;

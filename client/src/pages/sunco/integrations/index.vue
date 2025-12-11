@@ -160,22 +160,27 @@
               </div>
               <template v-if="integration.type === 'whatsapp'">
                 <VDataItem
+                  v-if="integration.accountId"
                   :loading="isLoading"
                   label="accountId"
                   :value="integration.accountId" />
                 <VDataItem
+                  v-if="integration.businessManagerId"
                   :loading="isLoading"
                   label="businessManagerId"
                   :value="integration.businessManagerId" />
                 <VDataItem
+                  v-if="integration.appId"
                   :loading="isLoading"
                   label="appId"
                   :value="integration.appId" />
                 <VDataItem
+                  v-if="integration.phoneNumber"
                   :loading="isLoading"
                   label="phoneNumber"
                   :value="integration.phoneNumber" />
                 <VDataItem
+                  v-if="integration.phoneNumberId"
                   :loading="isLoading"
                   label="phoneNumberId"
                   :value="integration.phoneNumberId" />

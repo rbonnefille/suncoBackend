@@ -28,6 +28,10 @@ export const suncoRoutes = [
     text: 'Search a Messaging User',
   },
   {
+    to: '/sunco/users/list-users',
+    text: 'Find user by email identity',
+  },
+  {
     to: '/sunco/notifications',
     text: 'Send Notification',
   },
