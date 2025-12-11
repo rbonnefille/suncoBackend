@@ -14,16 +14,17 @@ const metadataSet = ref(false);
 const customerMetadataSet = ref(false);
 const htmlTag = document.querySelector('html');
 const sidebarRef = ref(null);
+const isWidgetEmbedded = ref(false);
 
 const openSidebar = () => {
   sidebarRef.value?.openSidebar();
 };
 
-const updateWidgetLocale = locale => {
+const updateWidgetLocale = (locale) => {
   window.zE('messenger:set', 'locale', `${locale}`);
 };
 
-const updateCookieConsent = range => {
+const updateCookieConsent = (range) => {
   zE('messenger:set', 'cookies', `${range}`);
 };
 
@@ -124,7 +125,7 @@ const suncoButtons = {
       } else {
         useShowWarningToast(
           `No JWT in sessionStorage. Please login via the form`,
-          1500,
+          1500
         );
       }
     },
@@ -148,7 +149,7 @@ const suncoButtons = {
           type: 'image',
           mediaUrl: useGetRandomImageUrl(),
         },
-        Smooch.getDisplayedConversation().id,
+        Smooch.getDisplayedConversation().id
       );
     },
   },
@@ -158,7 +159,7 @@ const suncoButtons = {
     click() {
       window.open(
         'https://github.com/zendesk/sunshine-conversations-web',
-        '_blank',
+        '_blank'
       );
     },
   },
@@ -232,10 +233,20 @@ const zendeskButtons = {
     type: 'button',
     click() {
       openSidebar();
-      window.zE('messenger', 'render', {
-        mode: 'embedded',
-        widget: { targetElement: '#messenger-widget' },
-      });
+      if (!isWidgetEmbedded.value) {
+        isWidgetEmbedded.value = true;
+        window.zE('messenger', 'render', {
+          mode: 'embedded',
+          widget: { targetElement: '#messenger-widget' },
+        });
+      }
+    },
+  },
+  openSidebar: {
+    text: 'Open sidebar',
+    type: 'button',
+    click() {
+      openSidebar();
     },
   },
   showMessaging: {
@@ -261,7 +272,7 @@ const zendeskButtons = {
       } else {
         useShowWarningToast(
           `No JWT in sessionStorage. Please login via the form`,
-          1500,
+          1500
         );
       }
     },
@@ -319,7 +330,7 @@ const zendeskButtons = {
       window.zE(
         'messenger:open',
         'voice',
-        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID,
+        import.meta.env.VITE_ZENDESK_VOICE_LINE_ID
       );
     },
   },
@@ -352,7 +363,7 @@ const zendeskButtons = {
     click() {
       window.open(
         'https://developer.zendesk.com/api-reference/widget-messaging/web/core/',
-        '_blank',
+        '_blank'
       );
     },
   },
